@@ -7,7 +7,7 @@ const __dirname = dirname(__filename);
 
 import path from "node:path";
 import express from "express";
-import sequelize from "./src/config/database.js";
+import sequelize from "./src/core/database.js";
 import route from "./src/routes/route.js";
 
 //Instanciar o aplicativo express

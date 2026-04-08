@@ -1,5 +1,5 @@
 import Sequelize from "sequelize";
-import sequelize from "../config/database.js"; // Conexão com o banco de dados
+import sequelize from "../core/database.js"; // Conexão com o banco de dados
 import AvaliacaoModel from "./avaliacao.js";
 import CategoriaModel from "./categoria.js";
 import PessoaModel from "./pessoa.js";
