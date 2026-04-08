@@ -1,7 +1,0 @@
-{
-    "debug.node.autoAttach": "on",
-    "debug.javascript.autoAttachFilter": "smart",
-    "debug.javascript.breakOnConditionalError": true,
-    "debug.javascript.unmapMissingSources": true
-}
-
