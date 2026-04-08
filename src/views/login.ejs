@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verdear</title>
+    <link rel="icon" type="logo/png" href="/logo_simplificada.png"/>
+    <style>
+    :root {
+        --color-primary: #528b3a; /* Verde escuro do logo */
+        --color-secondary: #f39c12; /* Laranja do botão ENTRAR */
+        --color-bg-dark: #386641; /* Verde do fundo lateral */
+        --color-bg-light: #f7f7f7; /* Cor de fundo da caixa de login */
+        --color-text-dark: #2c3e50;
+        --color-text-light: #555;
+    }
+
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: var(--color-bg-dark); /* Cor de fundo principal */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh; /* Altura mínima do elemento body, altura da janela */
+        overflow: hidden; /* Evita barras de rolagem */
+        position: relative; /* Contexto de posicionamento para os elementos de filho */
+    }
+
+    /* Estilo para as formas de fundo */
+    .background-container::before, 
+    .background-container::after {
+        content: ''; 
+        position: absolute;
+        width: 300px;
+        height: 100vh;
+        background-color: var(--color-bg-dark);
+    }
+
+    .background-container::before {
+        left: 0;
+        top: 0;
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+        z-index: 0;
+    }
+
+    .background-container::after {
+        right: 0;
+        top: 0;
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+        z-index: 0;
+    }
+
+    /* O container branco central */
+    .login-box {
+        background-color: #fff;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+        z-index: 1; /* Para ficar acima dos elementos de fundo */
+        position: relative;
+    }
+
+    /* Logo */
+    .logo-container {
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+    }
+
+    .logo {
+        max-width: 150px; /* Ajuste conforme o tamanho real do seu logo */
+        height: auto;
+        margin-top: -100px; /* Puxa o logo para cima da caixa */
+    }
+
+    /* Título Login */
+    .login-title {
+        color: var(--color-primary);
+        font-size: 1.8em;
+        font-weight: bold;
+        margin-bottom: 30px;
+        text-align: left;
+    }
+
+    /* Campos de Input */
+    .input-group {
+        margin-bottom: 20px;
+    }
+
+    .input-group input {
+        width: 100%;
+        padding: 15px 20px;
+        border: 1px solid #ccc;
+        border-radius: 50px; /* Bordas arredondadas */
+        font-size: 1em;
+        box-sizing: border-box; /* Garante que padding e border não aumentem o tamanho total */
+        outline: none; /* Remove o contorno padrão no foco */
+        transition: border-color 0.3s;
+    }
+
+    .input-group input:focus {
+        border-color: var(--color-primary);
+    }
+
+    /* Botão ENTRAR */
+    .btn-entrar {
+        width: 100%;
+        background-color: var(--color-secondary); /* Laranja */
+        color: white;
+        padding: 15px 0;
+        border: none;
+        border-radius: 50px;
+        font-size: 1.1em;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: background-color 0.3s;
+    }
+
+    .btn-entrar:hover {
+        background-color: #e68a00; /* Laranja mais escuro ao passar o mouse */
+    }
+
+    /* Link Cadastrar */
+    .link-cadastrar {
+        display: block;
+        margin-top: 25px;
+        color: var(--color-text-light);
+        font-size: 1em;
+        text-decoration: none;
+        font-style: italic;
+        transition: color 0.3s;
+    }
+
+    .link-cadastrar:hover {
+        color: var(--color-primary);/* Verde da logo ao passar o mouse */
+    }
+
+    /* Ajustes para o logo */
+    .logo-container {
+        margin-bottom: 20px; /* Mantém um espaço abaixo do logo */
+    }
+
+    .logo {
+        max-width: 180px; /* Largura máxima do logo */
+        height: auto; /* Mantém a proporção da imagem */
+        margin-top: -80px; /* Reduzindo o valor negativo para puxar menos o logo para cima */
+        position: relative; 
+        z-index: 2; /* Garante que o logo fique acima de outros elementos de fundo */
+    }
+
+    /* Ajustes na caixa de login para dar espaço ao logo acima dela */
+    .login-box {
+        background-color: #fff;
+        padding: 40px; /* Mantenha o padding original */
+        padding-top: 80px; /* Aumente o padding superior para "empurrar" o conteúdo para baixo e dar espaço para o logo */
+        border-radius: 20px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+        z-index: 1; 
+        position: relative; /* Garante que o z-index funcione e posicionamento relativo ajude */
+    }
+    </style>
+
+</head>
+<body>
+    <div class="background-container">
+        <div class="login-box">
+            <div class="logo-container">
+                <img src="/logo.png" alt="Logo Verdear" class="logo">
+            </div>
+    <% if (typeof error !== 'undefined' && error) { %>
+        <div style="color: red; margin-bottom: 15px; font-weight: bold;">
+            <%= error %>
+        </div>
+    <% } %>
+
+    <form action="/login" method="POST" class="login-form">
+        <div class="input-group">
+            <input type="email" id="email" name="email" placeholder="E-mail" required>
+        </div>
+
+        <div class="input-group">
+            <input type="password" id="senha" name="senha" placeholder="Senha" required>
+        </div>
+        
+        <button type="submit" class="btn-entrar">ENTRAR</button>
+    </form>
+        <a href="/cadastrar" class="link-cadastrar">Cadastrar</a>
+    </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verdear | Finalizar Venda</title>
+    <link rel="icon" type="logo/png" href="/logo_simplificada.png"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        :root {
+            --color-primary: #386641;
+            --color-secondary: #f39c12;
+            --color-light-green: #d9ead3;
+            --color-white: #ffffff;
+            --color-text-dark: #2c3e50;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--color-white);
+        }
+
+        .main-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 5%;
+            border-bottom: 1px solid #eee;
+        }
+        .header-left img { max-width: 100px; }
+        .search-bar {
+            flex-grow: 1; max-width: 500px; height: 45px;
+            background-color: var(--color-primary);
+            border-radius: 50px; display: flex;
+            align-items: center; padding: 0 20px;
+            margin: 0 20px;
+        }
+        .search-bar input { background: none; border: none; color: var(--color-white); font-size: 1em; width: 100%; outline: none; }
+        .search-bar i { color: var(--color-white); margin-right: 10px; }
+        .header-icons { display: flex; align-items: center; }
+        .header-icons .icon-btn {
+            background: none; border: 2px solid var(--color-secondary);
+            border-radius: 50%; width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            margin-left: 15px; cursor: pointer; color: var(--color-secondary);
+            font-size: 1.2em; text-decoration: none;
+        }
+        .header-icons .icon-btn.user { border-color: var(--color-primary); color: var(--color-primary); }
+
+        .checkout-container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .checkout-section {
+            background-color: var(--color-light-green);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            color: var(--color-primary);
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--color-primary);
+            padding-bottom: 10px;
+        }
+
+        .item-list {
+            background-color: var(--color-white);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .item-row:last-child {
+            border-bottom: none;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: var(--color-primary);
+            padding: 15px 0;
+            border-top: 2px solid var(--color-primary);
+            margin-top: 15px;
+        }
+
+        .info-box {
+            background-color: var(--color-white);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .info-box p {
+            margin: 5px 0;
+            color: var(--color-text-dark);
+        }
+
+        .info-box strong {
+            color: var(--color-primary);
+        }
+
+        .btn-confirmar {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--color-secondary);
+            color: var(--color-white);
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-confirmar:hover {
+            background-color: var(--color-primary);
+        }
+
+        .btn-confirmar:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .email-contact {
+            background-color: var(--color-primary);
+            color: var(--color-white);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .email-contact p {
+            margin: 5px 0;
+        }
+
+        .email-contact a {
+            color: var(--color-secondary);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .email-contact a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-left">
+            <a href="/home"><img src="/logo.png" alt="Verdear Logo" class="logo"></a>
+        </div>
+
+        <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Pesquisar...">
+        </div>
+
+        <div class="header-icons">
+            <div class="icon-btn"><i class="far fa-comment-dots"></i></div>
+            <a href="/carrinho" class="icon-btn"><i class="fas fa-shopping-cart"></i></a>
+            <a href="/gestao-cadastro" class="icon-btn user"><i class="far fa-user"></i></a>
+        </div>
+    </header>
+
+    <div class="checkout-container">
+        
+        <div class="checkout-section">
+            <h2 class="section-title">Resumo do Pedido</h2>
+            
+            <% if (itens && itens.length > 0) { %>
+                <% itens.forEach(item => { %>
+                    <div class="item-list">
+                        <div class="item-row">
+                            <span><strong><%= item.nome %></strong></span>
+                            <span>Qtd: <%= item.quantidade %></span>
+                        </div>
+                        <div class="item-row">
+                            <span>Preço unitário: R$ <%= parseFloat(item.preco).toFixed(2).replace('.', ',') %></span>
+                            <span><strong>Subtotal: R$ <%= (item.preco * item.quantidade).toFixed(2).replace('.', ',') %></strong></span>
+                        </div>
+                    </div>
+                <% }); %>
+
+                <div class="total-row">
+                    <span>Subtotal:</span>
+                    <span>R$ <%= subtotal.toFixed(2).replace('.', ',') %></span>
+                </div>
+                <div class="total-row">
+                    <span>Frete:</span>
+                    <span>R$ <%= custoFrete.toFixed(2).replace('.', ',') %></span>
+                </div>
+                <div class="total-row">
+                    <span>TOTAL:</span>
+                    <span>R$ <%= total.toFixed(2).replace('.', ',') %></span>
+                </div>
+            <% } else { %>
+                <p>Nenhum item no carrinho.</p>
+            <% } %>
+        </div>
+
+        <div class="checkout-section">
+            <h2 class="section-title">Informações do Pedido</h2>
+            <div class="info-box">
+                <p><strong>Forma de Pagamento:</strong> <%= formaPagamento %></p>
+                <p><strong>Tipo de Entrega:</strong> <%= tipoEntrega %></p>
+                <% if (tipoEntrega === 'ENTREGA') { %>
+                    <p><strong>Valor do Frete:</strong> R$ <%= custoFrete.toFixed(2).replace('.', ',') %></p>
+                <% } %>
+            </div>
+        </div>
+
+        <% if (vendedoresEmails && vendedoresEmails.length > 0) { %>
+            <div class="checkout-section">
+                <h2 class="section-title">Contato do Fornecedor</h2>
+                <div class="email-contact">
+                    <p><strong>E-mail para contato:</strong></p>
+                    <% vendedoresEmails.forEach(email => { %>
+                        <p><i class="fas fa-envelope"></i> <a href="mailto:<%= email %>"><%= email %></a></p>
+                    <% }); %>
+                </div>
+            </div>
+        <% } %>
+
+        <button class="btn-confirmar" id="btn-confirmar" onclick="confirmarVenda()">
+            CONFIRMAR PEDIDO
+        </button>
+
+    </div>
+
+    <script>
+        function confirmarVenda() {
+            const btn = document.getElementById('btn-confirmar');
+            btn.disabled = true;
+            btn.textContent = 'Processando...';
+
+            fetch('/finalizar-venda', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Pedido confirmado com sucesso!');
+                    window.location.href = '/gestao-cadastro';
+                } else {
+                    alert(data.message || 'Erro ao confirmar pedido');
+                    btn.disabled = false;
+                    btn.textContent = 'CONFIRMAR PEDIDO';
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao processar pedido');
+                btn.disabled = false;
+                btn.textContent = 'CONFIRMAR PEDIDO';
+            });
+        }
+    </script>
+</body>
+</html>
+

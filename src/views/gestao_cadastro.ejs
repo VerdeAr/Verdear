@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Conta | Verdear</title>
+    <link rel="icon" type="logo/png" href="/logo_simplificada.png"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        :root {
+            --color-primary: #386641; /* Verde Escuro */
+            --color-secondary: #f39c12; /* Laranja */
+            --color-light-green: #d9ead3; /* Verde Claro */
+            --color-text-dark: #2c3e50;
+            --color-gray: #f4f4f4;
+            --color-white: #ffffff;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--color-gray);
+        }
+
+        /* --- 1. CABEÇALHO --- */
+        .main-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 5%;
+            border-bottom: 1px solid #eee;
+            background-color: var(--color-white);
+        }
+
+        .header-left a {
+            cursor: pointer; /* Muda o cursor para indicar clique */
+        }
+        .header-left .logo { max-width: 100px; margin-right: 20px; }
+        .search-bar { max-width: 500px; height: 45px; background-color: var(--color-primary); border-radius: 50px; display: flex; align-items: center; padding: 0 20px; }
+        .search-bar i, .search-bar input { color: var(--color-white); }
+        .search-bar input { background: none; border: none; outline: none; width: 100%; }
+        .header-icons { display: flex; align-items: center; }
+        /* Link do Usuário para a gestão */
+        .header-icons .icon-btn { border: 2px solid var(--color-secondary); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; margin-left: 15px; cursor: pointer; color: var(--color-secondary); font-size: 1.2em; }
+        .header-icons .icon-btn.user { border-color: var(--color-primary); color: var(--color-primary); }
+        
+        /* --- 2. LAYOUT PRINCIPAL (Minha Conta) --- */
+        .main-content {
+            display: flex;
+            max-width: 1200px;
+            margin: 30px auto;
+            background-color: var(--color-white);
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            min-height: 600px;
+        }
+
+        .sidebar {
+            width: 300px;
+            padding: 30px 20px;
+            background-color: var(--color-white);
+            border-right: 1px solid var(--color-gray);
+            border-radius: 15px 0 0 15px;
+        }
+
+        .user-info {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--color-gray);
+            margin-bottom: 20px;
+        }
+
+        .profile-picture {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: var(--color-light-green);
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            color: var(--color-primary);
+        }
+
+        .user-info h3 { margin: 5px 0 2px; color: var(--color-text-dark); }
+        .user-info p { margin: 0; font-size: 0.9em; color: #7f8c8d; }
+        .user-info .role { font-weight: bold; color: var(--color-secondary); }
+        .edit-icon { position: relative; top: -75px; left: 35px; color: var(--color-primary); cursor: pointer; }
+
+        .config-menu { list-style: none; padding: 0; }
+        .config-menu li a {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 10px;
+            margin-bottom: 5px;
+            text-decoration: none;
+            color: var(--color-text-dark);
+            border-radius: 8px;
+            transition: background-color 0.3s;
+            cursor: pointer; /* Adicionado para indicar o clique */
+        }
+
+        /* Classe .active agora é manipulada pelo JS */
+        .config-menu li a:hover, .config-menu li a.active {
+            background-color: var(--color-light-green);
+            color: var(--color-primary);
+        }
+
+        .config-menu i { margin-right: 15px; width: 20px; text-align: center; color: var(--color-secondary); }
+        .config-menu li a:hover i { color: var(--color-primary); }
+        
+        /* Ícone de seta na direita */
+        .config-menu .fa-chevron-right { color: #ccc; font-size: 0.8em; }
+
+        /* --- 3. CONTEÚDO PRINCIPAL --- */
+        .main-area {
+            flex-grow: 1;
+            padding: 30px;
+            border-radius: 0 15px 15px 0;
+        }
+
+        .main-area h2 {
+            color: var(--color-secondary);
+            font-size: 1.8em;
+            border-bottom: 2px solid var(--color-secondary);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+
+        /* --- 6. ESTILOS DE ABAS E FORMULÁRIOS --- */
+        .content-tab {
+            display: none; /* Esconde todas as abas por padrão */
+            padding: 20px 0;
+        }
+
+        .content-tab.active {
+            display: block; /* Mostra apenas a aba ativa */
+        }
+        
+        /* Estilos de formulário geral */
+        .update-form label, .password-form label, .form-cadastro-produto label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: var(--color-text-dark);
+        }
+
+        .update-form input, .password-form input, .form-cadastro-produto input{
+            width: 100%;
+            max-width: 400px; /* Limita a largura dos campos */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        
+        .update-form button, .password-form button, .form-cadastro-produto button {
+             margin-top: 20px;
+        }
+
+        /* --- ESTILOS PADRÃO DO BOTÃO (MANTIDOS) --- */
+        .btn-cadastrar {
+            background-color: var(--color-secondary);
+            color: var(--color-white);
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: opacity 0.3s;
+        }
+        
+        .btn-cadastrar:hover { opacity: 0.9; }
+
+        /* --- NOVOS ESTILOS PARA MENSAGEM DE SUCESSO (TOAST) --- */
+        #status-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            /* Usando um verde de sucesso mais claro que o primary, ou primary mesmo */
+            background-color: var(--color-primary); 
+            color: var(--color-white);
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 1000; 
+            opacity: 0; /* Começa invisível */
+            visibility: hidden; /* Garante que não interfira no clique */
+            transition: opacity 0.5s ease, visibility 0.5s;
+        }
+
+        #status-message p {
+            margin: 0;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        #status-message i {
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .show-message {
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+        /* --- AÇÕES DA CONTA (Logout + Excluir Conta) --- */
+        .account-actions {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ffffff;
+            color: var(--color-text-dark);
+            
+        }
+
+        .logout-form {
+            margin-bottom: 15px;
+        }
+
+        /* Botão de Logout — padrão Verdear */
+        .btn-logout {
+            background-color: var(--color-light-green);
+            color: var(--color-primary);
+            padding: 10px 20px;
+            width: 100%;
+            max-width: 300px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: opacity 0.3s;
+        }
+        .btn-logout:hover {
+            opacity: 0.9;
+        }
+
+        /* Estilos para Avaliação */
+        .avaliacao-section {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: var(--color-white);
+            border-radius: 8px;
+            border: 1px solid var(--color-primary);
+        }
+
+        .avaliacao-form {
+            display: none;
+        }
+
+        .avaliacao-form.active {
+            display: block;
+        }
+
+        .rating-stars {
+            display: flex;
+            gap: 5px;
+            margin: 10px 0;
+            font-size: 1.5em;
+        }
+
+        .rating-stars .star {
+            cursor: pointer;
+            color: #ddd;
+            transition: color 0.2s;
+        }
+
+        .rating-stars .star:hover,
+        .rating-stars .star.active {
+            color: gold;
+        }
+
+        .avaliacao-comentario {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 10px;
+            min-height: 80px;
+            font-family: Arial, sans-serif;
+            box-sizing: border-box;
+        }
+
+        .btn-avaliar {
+            background-color: var(--color-secondary);
+            color: var(--color-white);
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .btn-avaliar:hover {
+            background-color: var(--color-primary);
+        }
+
+        .avaliacao-existente {
+            background-color: var(--color-light-green);
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .avaliacao-existente .stars-display {
+            color: gold;
+            font-size: 1.2em;
+        }
+    </style>
+
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-left">
+            <a href="/"><img src="/logo.png" alt="Verdear Logo" class="logo"></a>
+        </div>
+
+        <form class="search-bar" action="/produtos/busca" method="GET" style="display:flex; align-items:center; flex: 1; max-width: 500px;">
+            <i class="fas fa-search"></i>
+            <input type="text" name="q" placeholder="Pesquisar produtos..." style="flex: 1; background: none; border: none; color: var(--color-white); outline: none;">
+            <button type="submit" style="background: none; border: none; color: var(--color-white); cursor: pointer; padding: 0 10px;">
+                <i class="fas fa-search"></i>
+            </button>
+        </form>
+
+        <div class="header-icons">
+            <div class="icon-btn"><i class="far fa-comment-dots"></i></div>
+            <div class="icon-btn"><i class="fas fa-shopping-cart"></i></div>
+            <a href="/gestao-cadastro" class="icon-btn user"><i class="far fa-user"></i></a>
+        </div>
+    </header>
+
+    <main class="main-content">
+        
+        <aside class="sidebar">
+            <div class="user-info">
+                <div class="profile-picture">
+                    <i class="far fa-user"></i>
+                </div>
+                <i class="fas fa-pencil-alt edit-icon"></i> 
+                
+                <h3><%= name %></h3>
+                <p><%= email %></p>
+                <p class="role"><%= role %></p>
+            </div>
+            
+            <h4 style="color: var(--color-primary);">Configurações</h4>
+            
+            <ul class="config-menu">
+                <li><a href="#alterar-cadastro" class="menu-item active" data-content="alterar-cadastro"><i class="fas fa-cog"></i>Alterar cadastro<i class="fas fa-chevron-right"></i></a></li>
+                <li><a href="#redefinir-senha" class="menu-item" data-content="redefinir-senha"><i class="fas fa-key"></i>Senha<i class="fas fa-chevron-right"></i></a></li>
+                
+                <% if (role === 'VENDEDOR') { %>
+                    <li><a href="#cadastrar-produtos" class="menu-item" data-content="cadastrar-produtos"><i class="fas fa-box-open"></i>Cadastrar produtos<i class="fas fa-chevron-right"></i></a></li>
+                    <li><a href="#catalogo-produtos" class="menu-item" data-content="catalogo-produtos"><i class="fas fa-book-open"></i>Catálogo de produtos<i class="fas fa-chevron-right"></i></a></li>
+                    <li><a href="#controle-pedidos" class="menu-item" data-content="controle-pedidos"><i class="fas fa-clipboard-list"></i>Controle de pedidos<i class="fas fa-chevron-right"></i></a></li>
+                    <li><a href="#historico-compras" class="menu-item" data-content="historico-compras"><i class="fas fa-history"></i>Histórico de compras<i class="fas fa-chevron-right"></i></a></li>
+                <% } else if (role === 'CLIENTE') { %>
+                    <li><a href="#historico-compras" class="menu-item" data-content="historico-compras"><i class="fas fa-history"></i>Histórico de compras<i class="fas fa-chevron-right"></i></a></li>
+                <% } %>
+                <% if (role === 'VENDEDOR') { %>
+                    <li><a href="#configurar-frete" class="menu-item" data-content="configurar-frete"><i class="fas fa-shipping-fast"></i>Configurar frete<i class="fas fa-chevron-right"></i></a></li>
+                <% } %>
+            </ul>
+        </aside>
+
+        <section class="main-area">
+            
+            <!-- FORMULÁRIO DE ALTERAR CADASTRO -->
+            <div id="alterar-cadastro" class="content-tab active">
+                <h2>Alterar Cadastro</h2>
+                <!-- Direcionar para a rota PUT /pessoa/cadastro (definida no controller) -->
+                <form action="/pessoa/cadastro" method="POST" class="update-form">
+                    <label for="nome_pessoa">Nome:</label>
+                    <input type="text" id="nome_pessoa" name="nome_pessoa" value="<%= name %>" required>
+
+                    <label for="email">E-mail:</label>
+                    <input type="email" id="email" name="email" value="<%= email %>" required>
+
+                    <button type="submit" class="btn-cadastrar">Atualizar Dados</button>
+                </form>
+            </div>
+
+            <!-- FORMULÁRIO DE REDEFINIR SENHA -->
+            <div id="redefinir-senha" class="content-tab">
+                <h2>Redefinir Senha</h2>
+                <!-- Direcionar para a rota PUT /pessoa/senha (definida no controller) -->
+                <form action="/pessoa/senha" method="POST" class="password-form">
+                    <label for="senhaAtual">Senha Atual:</label>
+                    <input type="password" id="senhaAtual" name="senhaAtual" required>
+                    
+                    <label for="novaSenha">Nova Senha:</label>
+                    <input type="password" id="novaSenha" name="novaSenha" required>
+
+                    <label for="confirmarSenha">Confirmar Nova Senha:</label>
+                    <input type="password" id="confirmarSenha" name="confirmarSenha" required>
+
+                    <button type="submit" class="btn-cadastrar">Salvar Nova Senha</button>
+                </form>
+            </div>
+
+
+            <% if (role === 'VENDEDOR') { %>
+                
+                <div id="cadastrar-produtos" class="content-tab">
+                    <h2>Cadastrar Produto</h2>
+
+                    <!-- Formulário seguindo o layout padrão .update-form -->
+                    <form id="form-cadastro-produto" action="/vendedor/produtos" method="POST" class="update-form">
+
+                        <!-- Nome -->
+                        <label for="nome_produto">Nome do Produto:</label>
+                        <input 
+                            type="text"
+                            id="nome_produto" 
+                            name="nome_produto"
+                            required
+                        >
+
+                        <!-- Descrição -->
+                        <label for="descricao">Descrição:</label>
+                        <input 
+                            type="text" 
+                            id="descricao" 
+                            name="descricao"
+                        >
+
+                        <!-- Preço -->
+                        <label for="preco">Preço:</label>
+                        <input 
+                            type="number" 
+                            id="preco" 
+                            name="preco"
+                            step="0.01"
+                            min="0"
+                            required
+                        >
+
+                        <!-- Estoque -->
+                        <label for="estoque">Estoque:</label>
+                        <input 
+                            type="number" 
+                            id="estoque" 
+                            name="estoque"
+                            step="0.001"
+                            min="0"
+                            required
+                        >
+
+                        <!-- Categoria -->
+                        <label for="id_categoria">Categoria:</label>
+                        <select id="id_categoria" name="id_categoria">
+                            <option value="">Selecione</option>
+                            <% if (categorias) { %>
+                                <% categorias.forEach(cat => { %>
+                                    <option value="<%= cat.id_categoria %>">
+                                        <%= cat.nome_categoria %>
+                                    </option>
+                                <% }) %>
+                            <% } %>
+                        </select>
+
+                        <!-- Unidade de Medida -->
+                        <label for="id_unidade_medida">Unidade de Medida:</label>
+                        <select id="id_unidade_medida" name="id_unidade_medida" required>
+                            <option value="">Selecione</option>
+
+                            <% if (unidades && unidades.length > 0) { %>
+                                <% unidades.forEach(u => { %>
+                                    <option value="<%= u.id_unidade_medida %>">
+                                        <%= u.nome_unidade_medida %>
+                                    </option>
+                                <% }) %>
+                            <% } %>
+                        </select>
+
+                        <!-- URL da Imagem -->
+                        <label for="url_imagem">URL da Imagem:</label>
+                        <input 
+                            type="text"
+                            id="url_imagem"
+                            name="url_imagem"
+                        >
+
+                        <button type="submit" class="btn-cadastrar">Salvar Produto</button>
+                    </form>
+                </div>
+
+                <div id="catalogo-produtos" class="content-tab">
+                    <h2>Catálogo de produtos</h2>
+
+                    <p style="color: var(--color-text-dark);">
+                        Aqui você pode visualizar e editar os seus produtos cadastrados.
+                    </p>
+
+                    <% if (catalogo && catalogo.length > 0) { %>
+                        <div style="margin-top: 15px;">
+                            <% catalogo.forEach(prod => { %>
+                                <div class="produto-item" data-id="<%= prod.id_produto %>" style="padding:10px; border:1px solid #eee; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between;">
+                                    <div>
+                                        <strong style="color:var(--color-primary)"><%= prod.nome_produto %></strong>
+                                        <div style="font-size:0.9em; color:#666;">Preço: R$ <%= parseFloat(prod.preco || 0).toFixed(2).replace('.', ',') %> • Estoque: <%= prod.estoque %></div>
+                                    </div>
+                                    <div style="display:flex; gap:8px; align-items:center;">
+                                        <button class="btn-edit-prod" data-id="<%= prod.id_produto %>" style="padding:6px 10px; border-radius:6px; background:#d9ead3; border:none; cursor:pointer">Editar</button>
+                                        <label style="display:flex; align-items:center; gap:6px; font-size:0.9em;">
+                                            <input type="checkbox" class="toggle-ativo" data-id="<%= prod.id_produto %>" <%= prod.ativo ? 'checked' : '' %> > Ativo
+                                        </label>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        </div>
+
+                        <!-- Edit form (reused) -->
+                        <div id="edit-prod-form" style="display:none; margin-top:10px; padding:12px; border:1px solid #ccc; border-radius:8px;">
+                            <h3>Editar produto</h3>
+                            <form id="form-editar-produto" class="update-form">
+                                <input type="hidden" name="id_produto" id="edit_id">
+                                <label>Nome do Produto</label>
+                                <input type="text" name="nome_produto" id="edit_nome" required>
+                                <label>Descrição</label>
+                                <input type="text" name="descricao" id="edit_descricao">
+                                <label>Preço</label>
+                                <input type="number" step="0.01" name="preco" id="edit_preco" required>
+                                <label>Estoque</label>
+                                <input type="number" step="0.001" name="estoque" id="edit_estoque" required>
+                                <label>Categoria</label>
+                                <select name="id_categoria" id="edit_categoria">
+                                    <option value="">Selecione</option>
+                                    <% if (categorias) { %>
+                                        <% categorias.forEach(cat => { %>
+                                            <option value="<%= cat.id_categoria %>">
+                                                <%= cat.nome_categoria %>
+                                            </option>
+                                        <% }) %>
+                                    <% } %>
+                                </select>
+                                <label>Unidade de Medida</label>
+                                <select name="id_unidade_medida" id="edit_unidade" required>
+                                    <option value="">Selecione</option>
+                                    <% if (unidades && unidades.length > 0) { %>
+                                        <% unidades.forEach(u => { %>
+                                            <option value="<%= u.id_unidade_medida %>">
+                                                <%= u.nome_unidade_medida %>
+                                            </option>
+                                        <% }) %>
+                                    <% } %>
+                                </select>
+                                <label>URL Imagem</label>
+                                <input type="text" name="url_imagem" id="edit_url">
+                                <div style="margin-top:10px; display:flex; gap:8px;">
+                                    <button type="submit" class="btn-cadastrar">Salvar</button>
+                                    <button type="button" id="btn-cancel-edit" class="btn-cadastrar" style="background:#ccc; color:#000">Cancelar</button>
+                                </div>
+                            </form>
+                        </div>
+
+                    <% } else { %>
+
+                        <p style="margin-top: 20px; font-weight: bold; color: #777;">
+                            Você ainda não possui produtos cadastrados.
+                        </p>
+
+                    <% } %>
+                </div>
+
+                <div id="controle-pedidos" class="content-tab">
+                    <h2>Controle de pedidos</h2>
+                    <p style="color: var(--color-text-dark);">Aqui você pode visualizar, editar o status e excluir os pedidos onde você é vendedor dos produtos.</p>
+                    
+                    <div id="pedidos-vendedor-container">
+                        <p style="text-align: center; padding: 20px; color: #777;">Carregando pedidos...</p>
+                    </div>
+                </div>
+
+                <div id="configurar-frete" class="content-tab">
+                    <h2>Configurar frete</h2>
+                    <p>Defina aqui o valor fixo do frete que será utilizado em suas vendas com entrega.</p>
+                    <form id="form-frete" class="update-form">
+                        <label for="frete_fixo">Frete fixo (R$)</label>
+                        <input type="number" step="0.01" id="frete_fixo" name="frete_fixo" value="<%= typeof frete_fixo !== 'undefined' && frete_fixo !== null ? frete_fixo : '' %>">
+                        <button type="submit" class="btn-cadastrar">Salvar Frete</button>
+                    </form>
+                </div>
+
+                <div id="historico-compras" class="content-tab">
+                    <h2>Histórico de compras</h2>
+                    
+                    <% if (pedidos && pedidos.length > 0) { %>
+                        <% pedidos.forEach(pedido => { %>
+                            <div class="order-history-item" style="background-color: var(--color-light-green); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                                <div class="order-details">
+                                    <h4>Pedido #<%= pedido.id_venda %> - <%= pedido.status || 'ABERTA' %></h4>
+                                    <p><strong>Data:</strong> <%= new Date(pedido.data_venda).toLocaleDateString('pt-BR') %></p>
+                                    <p><strong>Tipo de Entrega:</strong> <%= pedido.tipo_entrega || 'RETIRADA' %></p>
+                                    <p><strong>Valor Total:</strong> R$ <%= parseFloat(pedido.valor_total).toFixed(2).replace('.', ',') %></p>
+                                    <p><strong>Itens:</strong></p>
+                                    <ul style="margin-left: 20px;">
+                                        <% pedido.itens.forEach(item => { %>
+                                            <li>
+                                                <%= item.produto ? item.produto.nome_produto : 'Produto não encontrado' %> 
+                                                - Qtd: <%= item.quantidade %> 
+                                                - R$ <%= parseFloat(item.preco_unitario).toFixed(2).replace('.', ',') %>
+                                            </li>
+                                        <% }); %>
+                                    </ul>
+                                    
+                                    <!-- Seção de Avaliação -->
+                                    <div class="avaliacao-section">
+                                        <% if (pedido.avaliacao) { %>
+                                            <div class="avaliacao-existente">
+                                                <p><strong>Avaliação:</strong></p>
+                                                <div class="stars-display">
+                                                    <% for (let i = 1; i <= 5; i++) { %>
+                                                        <% if (i <= pedido.avaliacao.nota) { %>
+                                                            <i class="fas fa-star"></i>
+                                                        <% } else { %>
+                                                            <i class="far fa-star"></i>
+                                                        <% } %>
+                                                    <% } %>
+                                                </div>
+                                                <% if (pedido.avaliacao.comentario) { %>
+                                                    <p style="margin-top: 5px;"><%= pedido.avaliacao.comentario %></p>
+                                                <% } %>
+                                                <p style="font-size: 0.9em; color: #777; margin-top: 5px;">
+                                                    Avaliado em <%= new Date(pedido.avaliacao.data_avaliacao).toLocaleDateString('pt-BR') %>
+                                                </p>
+                                            </div>
+                                        <% } else { %>
+                                            <button class="btn-avaliar" onclick="toggleAvaliacao('<%= pedido.id_venda %>')">
+                                                Avaliar Pedido
+                                            </button>
+                                            <div class="avaliacao-form" id="avaliacao-form-<%= pedido.id_venda %>">
+                                                <p><strong>Avalie este pedido:</strong></p>
+                                                <div class="rating-stars" id="stars-<%= pedido.id_venda %>">
+                                                    <% for (let i = 1; i <= 5; i++) { %>
+                                                        <i class="far fa-star star" data-rating="<%= i %>" onclick="selectRating('<%= pedido.id_venda %>', <%= i %>)"></i>
+                                                    <% } %>
+                                                </div>
+                                                <textarea 
+                                                    class="avaliacao-comentario" 
+                                                    id="comentario-<%= pedido.id_venda %>" 
+                                                    placeholder="Deixe um comentário (opcional)"
+                                                    maxlength="255"
+                                                ></textarea>
+                                                <button class="btn-avaliar" onclick="salvarAvaliacao('<%= pedido.id_venda %>')">
+                                                    Salvar Avaliação
+                                                </button>
+                                                <button class="btn-avaliar" style="background-color: #ccc; margin-left: 10px;" onclick="toggleAvaliacao('<%= pedido.id_venda %>')">
+                                                    Cancelar
+                                                </button>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <p style="color: var(--color-text-dark); text-align: center; padding: 20px;">
+                            Você ainda não possui pedidos realizados.
+                        </p>
+                    <% } %>
+                </div>
+                
+            <% } else if (role === 'CLIENTE') { %>
+                
+                <div id="historico-compras" class="content-tab">
+                    <h2>Histórico de compras</h2>
+                    
+                    <% if (pedidos && pedidos.length > 0) { %>
+                        <% pedidos.forEach(pedido => { %>
+                            <div class="order-history-item" style="background-color: var(--color-light-green); padding: 15px; border-radius: 8px; margin-bottom: 15px; position: relative;">
+                                <% if (pedido.status === 'ABERTA') { %>
+                                    <button class="btn-delete-pedido" onclick="deletarPedido('<%= pedido.id_venda %>')" style="position: absolute; top: 15px; right: 15px; background: #e74c3c; color: white; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1em; transition: background 0.3s;" title="Excluir pedido" onmouseover="this.style.background='#c0392b'" onmouseout="this.style.background='#e74c3c'">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                <% } %>
+                                <div class="order-details">
+                                    <h4>Pedido #<%= pedido.id_venda %> - <%= pedido.status || 'ABERTA' %></h4>
+                                    <p><strong>Data:</strong> <%= new Date(pedido.data_venda).toLocaleDateString('pt-BR') %></p>
+                                    <p><strong>Tipo de Entrega:</strong> <%= pedido.tipo_entrega || 'RETIRADA' %></p>
+                                    <p><strong>Valor Total:</strong> R$ <%= parseFloat(pedido.valor_total).toFixed(2).replace('.', ',') %></p>
+                                    <p><strong>Itens:</strong></p>
+                                    <ul style="margin-left: 20px;">
+                                        <% pedido.itens.forEach(item => { %>
+                                            <li>
+                                                <%= item.produto ? item.produto.nome_produto : 'Produto não encontrado' %> 
+                                                - Qtd: <%= item.quantidade %> 
+                                                - R$ <%= parseFloat(item.preco_unitario).toFixed(2).replace('.', ',') %>
+                                            </li>
+                                        <% }); %>
+                                    </ul>
+                                    
+                                    <!-- Seção de Avaliação -->
+                                    <div class="avaliacao-section">
+                                        <% if (pedido.avaliacao) { %>
+                                            <div class="avaliacao-existente">
+                                                <p><strong>Avaliação:</strong></p>
+                                                <div class="stars-display">
+                                                    <% for (let i = 1; i <= 5; i++) { %>
+                                                        <% if (i <= pedido.avaliacao.nota) { %>
+                                                            <i class="fas fa-star"></i>
+                                                        <% } else { %>
+                                                            <i class="far fa-star"></i>
+                                                        <% } %>
+                                                    <% } %>
+                                                </div>
+                                                <% if (pedido.avaliacao.comentario) { %>
+                                                    <p style="margin-top: 5px;"><%= pedido.avaliacao.comentario %></p>
+                                                <% } %>
+                                                <p style="font-size: 0.9em; color: #777; margin-top: 5px;">
+                                                    Avaliado em <%= new Date(pedido.avaliacao.data_avaliacao).toLocaleDateString('pt-BR') %>
+                                                </p>
+                                            </div>
+                                        <% } else if (pedido.status === 'FINALIZADA') { %>
+                                            <button class="btn-avaliar" onclick="toggleAvaliacao('<%= pedido.id_venda %>')">
+                                                Avaliar Pedido
+                                            </button>
+                                            <div class="avaliacao-form" id="avaliacao-form-<%= pedido.id_venda %>">
+                                                <p><strong>Avalie este pedido:</strong></p>
+                                                <div class="rating-stars" id="stars-<%= pedido.id_venda %>">
+                                                    <% for (let i = 1; i <= 5; i++) { %>
+                                                        <i class="far fa-star star" data-rating="<%= i %>" onclick="selectRating('<%= pedido.id_venda %>', <%= i %>)"></i>
+                                                    <% } %>
+                                                </div>
+                                                <textarea 
+                                                    class="avaliacao-comentario" 
+                                                    id="comentario-<%= pedido.id_venda %>" 
+                                                    placeholder="Deixe um comentário (opcional)"
+                                                    maxlength="255"
+                                                ></textarea>
+                                                <button class="btn-avaliar" onclick="salvarAvaliacao('<%= pedido.id_venda %>')">
+                                                    Salvar Avaliação
+                                                </button>
+                                                <button class="btn-avaliar" style="background-color: #ccc; margin-left: 10px;" onclick="toggleAvaliacao('<%= pedido.id_venda %>')">
+                                                    Cancelar
+                                                </button>
+                                            </div>
+                                        <% } else { %>
+                                            <p style="color: #777; font-style: italic;">
+                                                Este pedido precisa estar finalizado para ser avaliado.
+                                            </p>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <p style="color: var(--color-text-dark); text-align: center; padding: 20px;">
+                            Você ainda não possui pedidos realizados.
+                        </p>
+                    <% } %>
+                </div>
+                
+            <% } else { %>
+                <div id="default-error" class="content-tab active">
+                    <p>Erro: Tipo de usuário não reconhecido.</p>
+                </div>
+            <% } %>
+        </section>
+        <!-- Logout -->
+            <div class="account-actions">
+                <!-- Função para logout -->
+                <div class="logout-form">
+                    <button onclick="window.location.href='/logout'" class="btn-logout">
+                        Sair da Conta
+                    </button>
+                </div>
+            </div>
+    </main>
+    
+    <div id="status-message">
+        <p></p>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <script>
+    // Função de mensagem estilo toast
+    function showFeedbackMessage(message, isSuccess = true) {
+        const $status = $('#status-message');
+        
+        const icon = isSuccess ? 'fas fa-check-circle' : 'fas fa-exclamation-triangle';
+        const bgColor = isSuccess ? 'var(--color-primary)' : '#c0392b';
+
+        $status.css('background-color', bgColor);
+        $status.find('p').html('<i class="' + icon + '"></i> ' + message);
+
+        $status.addClass('show-message');
+
+        setTimeout(() => {
+            $status.removeClass('show-message');
+        }, 2500);
+    }
+
+    $(document).ready(function () {
+
+        // Função para alternância das abas
+        $('.config-menu a.menu-item').on('click', function (e) {
+            e.preventDefault();
+
+            const targetId = $(this).attr('data-content');
+
+            $('.config-menu a.menu-item').removeClass('active');
+            $(this).addClass('active');
+
+            $('.main-area .content-tab').removeClass('active');
+            $('#' + targetId).addClass('active');
+
+            history.pushState(null, null, '/gestao-cadastro#' + targetId);
+        });
+
+        const initialHash = window.location.hash.substring(1);
+        if (initialHash) {
+            $('.config-menu a.menu-item').removeClass('active');
+            $(`.config-menu a[data-content="${initialHash}"]`).addClass('active');
+            $('.main-area .content-tab').removeClass('active');
+            $('#' + initialHash).addClass('active');
+        }
+
+        // Função para atualizar nome + email
+        $('.update-form').on('submit', function (e) {
+            e.preventDefault();
+            const form = $(this);
+
+            $.ajax({
+                type: 'PUT',
+                url: form.attr('action'),
+                data: form.serialize(),
+
+                success: function (response) {
+                    if (response.success) {
+                        showFeedbackMessage("Cadastro atualizado com sucesso!");
+
+                        // Função para atualizar DOM da sidebar
+                        $('#nome_pessoa').val();
+                        $('.user-info h3').text($('#nome_pessoa').val());
+                        $('.user-info p:first').text($('#email').val());
+                    } else {
+                        showFeedbackMessage(response.message || "Erro ao atualizar", false);
+                    }
+                },
+
+                error: function () {
+                    showFeedbackMessage("Erro interno ao atualizar cadastro", false);
+                }
+            });
+        });
+
+        // Função para atualizar senha
+        $('.password-form').on('submit', function (e) {
+            e.preventDefault();
+            const form = $(this);
+
+            $.ajax({
+                type: 'PUT',
+                url: form.attr('action'),
+                data: form.serialize(),
+
+                success: function (response) {
+                    if (response.success) {
+                        showFeedbackMessage("Senha alterada com sucesso!");
+                        form.trigger('reset');
+                    } else {
+                        showFeedbackMessage(response.message || "Erro ao alterar senha", false);
+                    }
+                },
+
+                error: function () {
+                    showFeedbackMessage("Erro interno ao alterar senha", false);
+                }
+            });
+        });
+
+        // Função para cadastrar produto
+            $("#form-cadastro-produto").on("submit", function (e) {
+                e.preventDefault();
+
+                $.ajax({
+                    type: "POST",
+                    url: "/vendedor/produtos",
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            showFeedbackMessage("Produto cadastrado com sucesso!");
+                            $("#form-cadastro-produto")[0].reset();
+                        } else {
+                            showFeedbackMessage(response.message, false);
+                        }
+                    },
+                    error: function () {
+                        showFeedbackMessage("Erro ao cadastrar produto.", false);
+                    }
+                });
+            });
+
+        // Função para editar produto
+        $('.btn-edit-prod').on('click', function() {
+            const id = $(this).data('id');
+            
+            // Função para buscar dados do produto via AJAX
+            $.ajax({
+                type: 'GET',
+                url: '/vendedor/produtos',
+                success: function(response) {
+                    if (response.success && response.produtos) {
+                        const prod = response.produtos.find(p => p.id_produto == id);
+                        if (prod) {
+                            $('#edit_id').val(prod.id_produto);
+                            $('#edit_nome').val(prod.nome_produto);
+                            $('#edit_descricao').val(prod.descricao || '');
+                            $('#edit_preco').val(prod.preco);
+                            $('#edit_estoque').val(prod.estoque);
+                            $('#edit_categoria').val(prod.id_categoria || '');
+                            $('#edit_unidade').val(prod.id_unidade_medida || '');
+                            $('#edit_url').val(prod.url_imagem || '');
+                            $('#edit-prod-form').show();
+                        }
+                    }
+                },
+                error: function() {
+                    showFeedbackMessage("Erro ao carregar dados do produto", false);
+                }
+            });
+        });
+
+        // Cancelar edição
+        $('#btn-cancel-edit').on('click', function() {
+            $('#edit-prod-form').hide();
+        });
+
+        // Salvar edição
+        $('#form-editar-produto').on('submit', function(e) {
+            e.preventDefault();
+            const id = $('#edit_id').val();
+            
+            $.ajax({
+                type: 'PUT',
+                url: `/vendedor/produtos/${id}`,
+                data: $(this).serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        showFeedbackMessage("Produto atualizado com sucesso!");
+                        $('#edit-prod-form').hide();
+                        setTimeout(() => window.location.reload(), 1000);
+                    } else {
+                        showFeedbackMessage(response.message || "Erro ao atualizar produto", false);
+                    }
+                },
+                error: function() {
+                    showFeedbackMessage("Erro ao atualizar produto", false);
+                }
+            });
+        });
+
+        // Função para toggle ativo/inativo
+        $('.toggle-ativo').on('change', function() {
+            const id = $(this).data('id');
+            const ativo = $(this).is(':checked');
+            
+            $.ajax({
+                type: 'PUT',
+                url: `/vendedor/produtos/${id}`,
+                data: { ativo: ativo },
+                success: function(response) {
+                    if (response.success) {
+                        showFeedbackMessage(ativo ? "Produto ativado!" : "Produto desativado!");
+                    } else {
+                        showFeedbackMessage(response.message || "Erro ao atualizar status", false);
+                        // Reverter checkbox
+                        $(this).prop('checked', !ativo);
+                    }
+                }.bind(this),
+                error: function() {
+                    showFeedbackMessage("Erro ao atualizar status do produto", false);
+                    // Reverter checkbox
+                    $(this).prop('checked', !ativo);
+                }.bind(this)
+            });
+        });
+
+        // Função para configurar frete
+        $('#form-frete').on('submit', function(e) {
+            e.preventDefault();
+            
+            $.ajax({
+                type: 'PUT',
+                url: '/pessoa/frete',
+                data: $(this).serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        showFeedbackMessage("Frete configurado com sucesso!");
+                    } else {
+                        showFeedbackMessage(response.message || "Erro ao configurar frete", false);
+                    }
+                },
+                error: function() {
+                    showFeedbackMessage("Erro ao configurar frete", false);
+                }
+            });
+        });
+
+        // Função para carregar pedidos do vendedor
+        function carregarPedidosVendedor() {
+            $.ajax({
+                type: 'GET',
+                url: '/vendedor/pedidos',
+                success: function(response) {
+                    if (response.success && response.pedidos) {
+                        const container = $('#pedidos-vendedor-container');
+                        if (response.pedidos.length === 0) {
+                            container.html('<p style="text-align: center; padding: 20px; color: #777;">Você ainda não possui pedidos como vendedor.</p>');
+                            return;
+                        }
+
+                        let html = '';
+                        response.pedidos.forEach(pedido => {
+                            html += `
+                                <div class="order-history-item" style="background-color: var(--color-light-green); padding: 15px; border-radius: 8px; margin-bottom: 15px; position: relative;">
+                                    <button class="btn-delete-pedido" onclick="deletarPedidoVendedor('${pedido.id_venda}')" style="position: absolute; top: 15px; right: 15px; background: #e74c3c; color: white; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1em; transition: background 0.3s;" title="Excluir pedido" onmouseover="this.style.background='#c0392b'" onmouseout="this.style.background='#e74c3c'">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <div class="order-details">
+                                        <h4>Pedido #${pedido.id_venda} - ${pedido.status || 'ABERTA'}</h4>
+                                        <p><strong>Cliente:</strong> ${pedido.cliente ? pedido.cliente.nome : 'N/A'}</p>
+                                        <p><strong>E-mail:</strong> ${pedido.cliente ? pedido.cliente.email : 'N/A'}</p>
+                                        <p><strong>Data:</strong> ${new Date(pedido.data_venda).toLocaleDateString('pt-BR')}</p>
+                                        <p><strong>Tipo de Entrega:</strong> ${pedido.tipo_entrega || 'RETIRADA'}</p>
+                                        <p><strong>Valor Total:</strong> R$ ${parseFloat(pedido.valor_total || 0).toFixed(2).replace('.', ',')}</p>
+                                        <p><strong>Status:</strong> 
+                                            <select id="status-${pedido.id_venda}" onchange="atualizarStatusPedido('${pedido.id_venda}')" style="margin-left: 10px; padding: 5px; border-radius: 5px; border: 1px solid #ccc;">
+                                                <option value="ABERTA" ${pedido.status === 'ABERTA' ? 'selected' : ''}>ABERTA</option>
+                                                <option value="FINALIZADA" ${pedido.status === 'FINALIZADA' ? 'selected' : ''}>FINALIZADA</option>
+                                                <option value="CANCELADA" ${pedido.status === 'CANCELADA' ? 'selected' : ''}>CANCELADA</option>
+                                            </select>
+                                        </p>
+                                        <p><strong>Itens:</strong></p>
+                                        <ul style="margin-left: 20px;">
+                                            ${pedido.itens.map(item => `
+                                                <li>
+                                                    ${item.produto ? item.produto.nome_produto : 'Produto não encontrado'} 
+                                                    - Qtd: ${item.quantidade} 
+                                                    - R$ ${parseFloat(item.preco_unitario || 0).toFixed(2).replace('.', ',')}
+                                                </li>
+                                            `).join('')}
+                                        </ul>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        container.html(html);
+                    } else {
+                        $('#pedidos-vendedor-container').html('<p style="text-align: center; padding: 20px; color: #777;">Erro ao carregar pedidos.</p>');
+                    }
+                },
+                error: function() {
+                    $('#pedidos-vendedor-container').html('<p style="text-align: center; padding: 20px; color: #777;">Erro ao carregar pedidos.</p>');
+                }
+            });
+        }
+
+        // Carregar pedidos quando a aba for aberta
+        $('.config-menu a[data-content="controle-pedidos"]').on('click', function() {
+            setTimeout(carregarPedidosVendedor, 100);
+        });
+
+        // Função para atualizar status do pedido
+        window.atualizarStatusPedido = function(idVenda) {
+            const novoStatus = $(`#status-${idVenda}`).val();
+            
+            $.ajax({
+                type: 'PUT',
+                url: `/venda/${idVenda}`,
+                data: { status: novoStatus },
+                success: function(response) {
+                    if (response.success || response.id_venda) {
+                        showFeedbackMessage('Status do pedido atualizado com sucesso!');
+                    } else {
+                        showFeedbackMessage(response.message || 'Erro ao atualizar status', false);
+                    }
+                },
+                error: function() {
+                    showFeedbackMessage('Erro ao atualizar status do pedido', false);
+                }
+            });
+        };
+
+        // Função para deletar pedido (vendedor)
+        window.deletarPedidoVendedor = function(idVenda) {
+            if (!confirm('Tem certeza que deseja excluir este pedido? Esta ação não pode ser desfeita.')) {
+                return;
+            }
+
+            fetch('/venda/' + idVenda, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showFeedbackMessage('Pedido excluído com sucesso!');
+                    setTimeout(() => {
+                        carregarPedidosVendedor();
+                    }, 1000);
+                } else {
+                    showFeedbackMessage(data.message || 'Erro ao excluir pedido', false);
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                showFeedbackMessage('Erro ao excluir pedido', false);
+            });
+        };
+
+        // Funções de Avaliação
+        
+        // Função para armazenar a nota selecionada para cada pedido
+        window.ratings = {};
+    });
+
+    // Função para toggle do formulário de avaliação
+    function toggleAvaliacao(idVenda) {
+        const form = document.getElementById('avaliacao-form-' + idVenda);
+        if (form) {
+            form.classList.toggle('active');
+            // Função para resetar seleção ao abrir
+            if (form.classList.contains('active')) {
+                window.ratings[idVenda] = 0;
+                updateStarsDisplay(idVenda, 0);
+            }
+        }
+    }
+
+    // Função para selecionar nota
+    function selectRating(idVenda, nota) {
+        window.ratings[idVenda] = nota;
+        updateStarsDisplay(idVenda, nota);
+    }
+
+    // Atualizar visualização das estrelas
+    function updateStarsDisplay(idVenda, nota) {
+        const starsContainer = document.getElementById('stars-' + idVenda);
+        if (starsContainer) {
+            const stars = starsContainer.querySelectorAll('.star');
+            stars.forEach((star, index) => {
+                if (index < nota) {
+                    star.classList.remove('far');
+                    star.classList.add('fas', 'active');
+                } else {
+                    star.classList.remove('fas', 'active');
+                    star.classList.add('far');
+                }
+            });
+        }
+    }
+
+    // Salvar avaliação
+    function salvarAvaliacao(idVenda) {
+        // Converter para número se necessário
+        const idVendaNum = typeof idVenda === 'string' ? parseInt(idVenda) : idVenda;
+        const nota = window.ratings[idVendaNum] || window.ratings[idVenda] || 0;
+        const comentario = document.getElementById('comentario-' + idVenda).value.trim();
+
+        if (!nota || nota < 1 || nota > 5) {
+            alert('Por favor, selecione uma nota de 1 a 5 estrelas.');
+            return;
+        }
+
+        fetch('/avaliacao', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id_venda: idVendaNum || idVenda,
+                nota: nota,
+                comentario: comentario
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert('Avaliação registrada com sucesso!');
+                window.location.reload();
+            } else {
+                alert(data.message || 'Erro ao salvar avaliação');
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert('Erro ao salvar avaliação');
+        });
+    }
+
+    // Deletar pedido
+    function deletarPedido(idVenda) {
+        if (!confirm('Tem certeza que deseja excluir este pedido? Esta ação não pode ser desfeita.')) {
+            return;
+        }
+
+        fetch('/venda/' + idVenda, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                showFeedbackMessage('Pedido excluído com sucesso!');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                showFeedbackMessage(data.message || 'Erro ao excluir pedido', false);
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            showFeedbackMessage('Erro ao excluir pedido', false);
+        });
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verdear | Sua Vitrine</title>
+    <link rel="icon" type="logo/png" href="/logo_simplificada.png"/>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        :root {
+            --color-primary: #386641; /* Verde Escuro */
+            --color-secondary: #f39c12; /* Laranja */
+            --color-light-green: #d9ead3; /* Verde Claro (para categorias) */
+            --color-white: #ffffff;
+            --color-text-dark: #2c3e50;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--color-white);
+        }
+
+        /* Cabeçalho */
+        .main-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 5%;
+            border-bottom: 1px solid #eee;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-left .logo {
+            max-width: 100px;
+            margin-right: 20px;
+        }
+
+        /* Barra de Pesquisa */
+        .search-bar {
+            flex-grow: 1;
+            position: relative;
+            max-width: 500px;
+            height: 45px;
+            background-color: var(--color-primary);
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .search-bar input {
+            background: none;
+            border: none;
+            color: var(--color-white);
+            font-size: 1em;
+            width: 100%;
+            outline: none;
+        }
+
+        .search-bar i {
+            color: var(--color-white);
+            margin-right: 10px;
+        }
+
+        /* Ícones da Direita */
+        .header-icons {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-icons .icon-btn {
+            background: none;
+            border: 2px solid var(--color-secondary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 15px;
+            cursor: pointer;
+            color: var(--color-secondary);
+            font-size: 1.2em;
+        }
+        
+        .header-icons .icon-btn.user {
+             border-color: var(--color-primary);
+             color: var(--color-primary);
+        }
+
+        /* Banner - Carrousel */
+        .banner-container {
+            max-width: 1000px;
+            margin: 20px auto;
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            height: 250px; /* Altura fixa para o container do carousel */
+        }
+
+        .carousel-inner {
+            display: flex; 
+            width: 100%;
+            height: 100%;
+            transition: transform 0.5s ease-in-out; /* Transição para o slide */
+        }
+
+        .banner-item {
+            min-width: 100%; /* Garante que cada item ocupe o slide inteiro */
+            flex-shrink: 0; 
+            height: 100%;
+            position: relative;
+        }
+
+        .banner-img {
+            width: 100%;
+            height: 100%; 
+            object-fit: cover;
+            filter: brightness(0.8);
+        }
+
+        .banner-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            color: var(--color-white);
+            font-size: 2.5em;
+            font-weight: bold;
+            pointer-events: none; /* Permite cliques nas setas */
+        }
+
+        .banner-overlay span {
+            font-weight: normal;
+        }
+
+        /* Estilos para as setas de navegação */
+        .carousel-control {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.4); 
+            color: var(--color-white);
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 1.5em;
+            z-index: 10;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .carousel-control:hover {
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+
+        .carousel-control.prev {
+            left: 10px;
+        }
+
+        .carousel-control.next {
+            right: 10px;
+        }
+        
+        /* Categorias */
+        .categories-section {
+            margin: 20px 5%;
+            padding: 20px;
+            background-color: var(--color-light-green);
+            border-radius: 15px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .category-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none; 
+            color: var(--color-text-dark);
+        }
+
+        .category-icon {
+            background-color: var(--color-white);
+            border-radius: 10px;
+            width: 80px;
+            height: 80px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .category-icon img {
+            max-width: 60px;
+            height: auto;
+        }
+
+        /* Produtos em destaque */
+        .products-section {
+            margin: 20px 5%;
+            display: flex;
+            gap: 20px;
+            justify-content: space-between;
+        }
+
+        .product-card {
+            flex: 1;
+            padding: 15px;
+            background-color: var(--color-primary);
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            color: var(--color-white);
+            max-width: 30%; 
+        }
+        
+        .product-card:hover {
+            opacity: 0.9;
+        }
+
+        .product-image-container {
+            margin-bottom: 10px;
+        }
+
+        .product-image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .product-details {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: var(--color-white);
+            border-radius: 50px;
+            padding: 10px 15px;
+            margin-top: 10px;
+        }
+
+        .product-details .price {
+            color: var(--color-primary);
+            font-weight: bold;
+        }
+
+        .product-details .add-btn {
+            background-color: var(--color-secondary);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-white);
+            font-size: 1.2em;
+        }
+        
+        .rating {
+            color: gold;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+        
+        /* Notificação do carrinho */
+        #cart-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--color-primary);
+            color: var(--color-white);
+            padding: 15px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s, transform 0.5s;
+        }
+
+        #cart-notification.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-10px);
+        }
+        .header-left a {
+            cursor: pointer; /* Muda o cursor para uma mãozinha */
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="cart-notification">
+        Item adicionado ao carrinho!
+    </div>
+
+    <header class="main-header">
+        <div class="header-left">
+            <a href="/"><img src="/logo.png" alt="Verdear Logo" class="logo"></a>
+        </div>
+
+        <form class="search-bar" action="/produtos/busca" method="GET" style="display:flex; align-items:center;">
+            <i class="fas fa-search"></i>
+            <input type="text" name="q" placeholder="Pesquisar produtos..." style="flex: 1;">
+            <button type="submit" style="background: none; border: none; color: var(--color-white); cursor: pointer; padding: 0 10px;">
+                <i class="fas fa-search"></i>
+            </button>
+        </form>
+
+        <div class="header-icons">
+            <div class="icon-btn"><i class="far fa-comment-dots"></i></div>
+            <a href="/carrinho" class="icon-btn"><i class="fas fa-shopping-cart"></i></a>
+            <a href="/gestao-cadastro" class="icon-btn user" style="text-decoration: none;"><i class="far fa-user"></i></a>
+        </div>
+    </header>
+
+    <section class="banner-container">
+        <div class="carousel-inner" id="carousel-inner">  
+        <div class="banner-item">
+            <a href="" target="_blank" style="text-decoration: none; color: inherit;">
+                <img src="/banner1.png" alt="Banner 1" class="banner-img">
+                <div class="banner-overlay">
+                </div>
+            </a>
+        </div>
+            
+        <div class="banner-item">
+            <a href="https://g1.globo.com/sp/presidente-prudente-e-regiao/noticia/2025/11/18/agricultura-familiar-e-organica-e-fonte-de-renda-para-familias-no-interior-de-sp.ghtml" target="_blank" style="text-decoration: none; color: inherit;">
+                <img src="/banner2.png" alt="Banner 2" class="banner-img">
+                <div class="banner-overlay">
+                </div>
+            </a>
+        </div>
+
+        <div class="banner-item">
+            <a href="https://www.kuhnbrasil.com.br/noticias/agricultura-familiar-forca-que-alimenta-o-brasil" target="_blank" style="text-decoration: none; color: inherit;">
+                <img src="/banner3.png" alt="Banner 3" class="banner-img">
+                <div class="banner-overlay">
+                </div>
+            </a>
+        </div>
+        </div>
+
+        <button class="carousel-control prev" id="prev-btn" aria-label="Anterior">&#10094;</button> 
+        <button class="carousel-control next" id="next-btn" aria-label="Próximo">&#10095;</button> 
+    </section>
+
+    <section class="categories-section">
+        <% 
+            // Simulação de dados de categorias.
+            const categories = [
+                { id: 1, name: 'Hortifrúti', iconUrl: '/icons/frutas.png' },
+                { id: 2, name: 'Laticínios', iconUrl: '/icons/verduras.png' },
+                { id: 3, name: 'Grãos', iconUrl: '/icons/laticinios.png' },
+                { id: 4, name: 'Pães e Massas', iconUrl: '/icons/graos.png' },
+                { id: 6, name: 'Temperos', iconUrl: '/icons/especiarias.png' }
+            ];
+        %>
+        
+        <% categories.forEach(category => { %>
+            <a href="/itens_categoria/<%= category.id %>" class="category-item">
+                <div class="category-icon">
+                    <i class="fas fa-tractor fa-2x" style="color:#528b3a;"></i> 
+                </div>
+                <%= category.name %>
+            </a>
+        <% }); %>
+    </section>
+
+    <section class="products-section">
+        <% if (produtos && produtos.length > 0) { %>
+            <% produtos.forEach(produto => { %>
+                <div class="product-card" data-product-id="<%= produto.id_produto %>">
+                    <div class="rating">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                    </div>
+                    
+                    <div class="product-image-container">
+                        <% if (produto.url_imagem) { %>
+                            <img src="<%= produto.url_imagem %>" alt="<%= produto.nome_produto %>">
+                        <% } else { %>
+                            <img src="https://via.placeholder.com/200x150/d9ead3/386641?text=<%= produto.nome_produto.split(' ')[0] %>" alt="<%= produto.nome_produto %>">
+                        <% } %>
+                    </div>
+                    
+                    <div style="padding: 10px 0; color: var(--color-white);">
+                        <h4 style="margin: 5px 0; font-size: 1em;"><%= produto.nome_produto %></h4>
+                    </div>
+                    
+                    <div class="product-details">
+                        <span class="price">R$ <%= parseFloat(produto.preco).toFixed(2).replace('.', ',') %></span>
+                        <div class="add-btn"><i class="fas fa-plus"></i></div>
+                    </div>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <div style="width: 100%; text-align: center; padding: 40px; color: var(--color-text-dark);">
+                <p>Nenhum produto disponível no momento.</p>
+            </div>
+        <% } %>
+    </section>
+
+    <script>
+        // Lógica do Carrinho (Notificação)
+        const productCards = document.querySelectorAll('.product-card');
+        const notification = document.getElementById('cart-notification');
+
+        productCards.forEach(card => {
+            card.addEventListener('click', function () {
+                const productId = this.getAttribute('data-product-id');
+
+                fetch("/carrinho/add", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        id_produto: productId,
+                        quantidade: 1
+                    })
+                })
+                .then(res => res.json())
+                .then((data) => {
+                    if (data.success) {
+                        notification.classList.add('show');
+                        setTimeout(() => {
+                            notification.classList.remove('show');
+                        }, 2000);
+                    } else {
+                        alert(data.message || "Erro ao adicionar ao carrinho");
+                    }
+                })
+                .catch(err => {
+                    console.error("Erro:", err);
+                    alert("Erro ao adicionar produto ao carrinho");
+                });
+            });
+        });
+
+        // Lógica do Carousel
+        const carouselInner = document.getElementById('carousel-inner');
+        const carouselItems = document.querySelectorAll('.banner-item');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        let currentIndex = 0; // Índice da imagem atual
+        const totalItems = carouselItems.length;
+
+        function updateCarousel() {
+            // Move o carousel (o container interno) para a esquerda em múltiplos de 100%
+            carouselInner.style.transform = `translateX(-${currentIndex * 100}%)`;
+        }
+
+        // Event listener para a seta "Próximo"
+        nextBtn.addEventListener('click', () => {
+            // Avança, mas volta para 0 se passar do último
+            currentIndex = (currentIndex + 1) % totalItems; 
+            updateCarousel();
+        });
+
+        // Event listener para a seta "Anterior"
+        prevBtn.addEventListener('click', () => {
+            // Volta, mas vai para o último se for menor que 0
+            currentIndex = (currentIndex - 1 + totalItems) % totalItems; 
+            updateCarousel();
+        });
+
+    </script>
+</body>
+</html>
