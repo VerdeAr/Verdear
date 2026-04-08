@@ -1,14 +1,13 @@
-import { dirname } from "node:path";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import session from "express-session";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-import path from "node:path";
 import express from "express";
-import sequelize from "./src/core/database.js";
-import route from "./src/routes/route.js";
+import sequelize from "./core/database.js";
+import route from "./routes/route.js";
 
 //Instanciar o aplicativo express
 const app = express();
@@ -26,8 +25,8 @@ app.use(
 
 // Define o EJS como motor de view padrão
 app.set("view engine", "ejs");
-app.set("views", "mvc/views");
-app.use(express.static(path.join(__dirname, "public")));
+app.set("views", "src/views");
+app.use(express.static(join(__dirname, "public")));
 
 // Middlewares
 app.use(express.json()); //interpreta JSON no corpo das requisições

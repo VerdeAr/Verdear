@@ -3,14 +3,14 @@
 	"version": "1.0.0",
 	"description": "Verdear",
 	"type": "module",
-	"main": "app.js",
+	"main": "src/app.js",
 	"scripts": {
 		"prepare": "husky",
 		"check": "biome lint && biome check",
 		"format": "biome check --write",
-		"start": "node app.js",
-		"dev": "node --inspect app.js",
-		"debug": "node --inspect-brk app.js"
+		"start": "node src/app.js",
+		"dev": "node --inspect src/app.js",
+		"debug": "node --inspect-brk src/app.js"
 	},
 	"dependencies": {
 		"bcrypt": "^5.1.1",
