@@ -1,21 +1,23 @@
-FROM node:20-alpine AS build
+FROM oven/bun:alpine AS build
 
-COPY package*.json ./
+WORKDIR /usr/src/app
 
-RUN npm ci
+COPY package.json bun.lock ./
+
+RUN bun install --frozen-lockfile
 
 COPY . .
 
-FROM node:20-alpine AS run
+FROM oven/bun:alpine AS run
 
 ENV NODE_ENV=production
 
 WORKDIR /usr/src/app
 
-COPY --from=build package*.json ./
-COPY --from=build node_modules ./node_modules
-COPY --from=build src ./src
+COPY --from=build /usr/src/app/package.json ./
+COPY --from=build /usr/src/app/node_modules ./node_modules
+COPY --from=build /usr/src/app/src ./src
 
 EXPOSE 3000
 
-CMD ["node", "src/app.js"]
+CMD ["bun", "run", "src/app.js"]

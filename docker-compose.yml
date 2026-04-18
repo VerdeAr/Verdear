@@ -19,7 +19,7 @@ services:
 
   verdear:
     build:
-      dockerfile: dockerfile
+      dockerfile: Dockerfile
     environment:
       DB_HOST: banco
       DB_PORT: 5432
