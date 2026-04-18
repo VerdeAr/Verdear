@@ -8,9 +8,8 @@
 		"prepare": "husky",
 		"check": "biome lint && biome check",
 		"format": "biome check --write",
-		"start": "node src/app.js",
-		"dev": "node --inspect src/app.js",
-		"debug": "node --inspect-brk src/app.js"
+		"start": "bun run src/app.js",
+		"dev": "bun --watch src/app.js"
 	},
 	"dependencies": {
 		"bcrypt": "^5.1.1",
@@ -21,10 +20,7 @@
 		"express-session": "^1.18.2",
 		"handlebars": "^4.7.9",
 		"jsonwebtoken": "^9.0.2",
-		"pg": "^8.16.3",
-		"sequelize": "^6.37.7",
-		"swagger-jsdoc": "^6.2.8",
-		"swagger-ui-express": "^5.0.1"
+		"pg": "^8.16.3"
 	},
 	"author": "",
 	"license": "ISC",
