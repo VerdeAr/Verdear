@@ -1,11 +1,6 @@
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
-import session from "express-session";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
+import { join } from "node:path";
 import express from "express";
+import session from "express-session";
 import sequelize from "./core/database.js";
 import route from "./routes/route.js";
 
@@ -26,7 +21,7 @@ app.use(
 // Define o EJS como motor de view padrão
 app.set("view engine", "ejs");
 app.set("views", "src/views");
-app.use(express.static(join(__dirname, "public")));
+app.use(express.static(join(import.meta.dir, "public")));
 
 // Middlewares
 app.use(express.json()); //interpreta JSON no corpo das requisições
@@ -40,6 +35,7 @@ app.use("/", route); //Usa as rotas do MVC (as definidas em mvc/routes/route.js)
 		console.log("✅ Conexão com o banco bem-sucedida");
 	} catch (error) {
 		console.error("❌ Erro ao conectar com o banco:", error);
+		process.exit(1);
 	}
 })();
 
