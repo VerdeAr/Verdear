@@ -9,42 +9,29 @@ import isAuthenticated from "../middlewares/authMiddleware.js";
 
 const route = express.Router();
 
-//Conecta-se ao banco de dados, deleta todas as tabelas dos modelos e as recria, perdendo todos os dados existentes
-// database.sequelize.sync({force: true}).then(() => {
-//     console.log('{ force: true }');
-// });
-
-// Rota para exibir a página de login
 route.get("/", (req, res) => {
-	// Adiciona o redirecionamento se o usuário já estiver logado
 	if (req.session?.isAuthenticated) {
-		return res.redirect("/home"); // Redireciona para a home
+		return res.redirect("/home");
 	}
-	// Renderiza a view 'login'
 	return res.render("login", { error: null });
 });
-// Rota para processar o login (POST /login)
+
 route.post("/login", controllerPessoa.authenticate);
 
-// Rota para exibir a página de cadastro
 route.get("/cadastrar", (_req, res) => {
 	res.render("cadastro", { error: null });
 });
 
-// Rota para processar o cadastro via formulário (redireciona para login)
 route.post("/cadastrar", controllerPessoa.registerFromForm);
 
-// Rota para a home
 route.get("/home", isAuthenticated, controllerHome.viewHome);
 
-// Rota para produtos por categoria
 route.get(
 	"/itens_categoria/:id",
 	isAuthenticated,
 	controllerHome.viewProdutosPorCategoria,
 );
 
-// Rota para logout
 route.get("/logout", (req, res) => {
 	req.session.destroy((err) => {
 		if (err) {
@@ -52,12 +39,11 @@ route.get("/logout", (req, res) => {
 			return res.redirect("/gestao-cadastro");
 		}
 
-		res.clearCookie("connect.sid"); // limpa o cookie da sessão
-		res.redirect("/"); // volta ao login corretamente
+		res.clearCookie("connect.sid");
+		res.redirect("/");
 	});
 });
 
-// Rota para gestão de cadastro
 route.get("/gestao-cadastro", isAuthenticated, async (req, res) => {
 	const userId = req.session.userId;
 	const role = req.session.userRole;
@@ -65,7 +51,6 @@ route.get("/gestao-cadastro", isAuthenticated, async (req, res) => {
 	let catalogo = [];
 	const pedidos = [];
 
-	// Buscar pedidos para ambos VENDEDOR e CLIENTE
 	const { Venda, VendaProduto, Produto, Avaliacao } = await import(
 		"../models/index.js"
 	);
@@ -74,13 +59,11 @@ route.get("/gestao-cadastro", isAuthenticated, async (req, res) => {
 		order: [["data_venda", "DESC"]],
 	});
 
-	// Buscar itens de cada venda e verificar se já foi avaliado
 	for (const venda of vendas) {
 		const itens = await VendaProduto.findAll({
 			where: { id_venda: venda.id_venda },
 		});
 
-		// Buscar informações dos produtos
 		const itensComProdutos = await Promise.all(
 			itens.map(async (item) => {
 				const produto = await Produto.findByPk(item.id_produto);
@@ -91,7 +74,6 @@ route.get("/gestao-cadastro", isAuthenticated, async (req, res) => {
 			}),
 		);
 
-		// Verificar se já existe avaliação para este pedido
 		const avaliacao = await Avaliacao.findOne({
 			where: {
 				id_venda: venda.id_venda,
@@ -128,10 +110,8 @@ route.get("/gestao-cadastro", isAuthenticated, async (req, res) => {
 	});
 });
 
-// Busca de produtos por texto (nome ou descrição)
 route.get("/produtos/busca", isAuthenticated, controllerHome.searchProducts);
 
-// Rotas do Carrinho
 route.get("/carrinho", isAuthenticated, controllerCarrinho.viewCarrinho);
 route.post("/carrinho/add", isAuthenticated, controllerCarrinho.addItem);
 route.delete(
@@ -155,20 +135,16 @@ route.post(
 	controllerCarrinho.savePagamento,
 );
 
-// Controller Pessoa
 route.put("/pessoa/cadastro", isAuthenticated, controllerPessoa.putCadastro);
 route.put("/pessoa/senha", isAuthenticated, controllerPessoa.putSenha);
 route.put("/pessoa/frete", isAuthenticated, controllerPessoa.putFrete);
 
-// Controller Avaliacao
 route.post("/avaliacao", isAuthenticated, controllerAvaliacao.postAvaliacao);
 
-// Controller Produto
 route.get("/vendedor/produtos", controllerProduto.getProdutosVendedor);
 route.post("/vendedor/produtos", controllerProduto.postProduto);
 route.put("/vendedor/produtos/:id", controllerProduto.putProduto);
 
-// Controller Venda
 route.get("/finalizar-venda", isAuthenticated, controllerVenda.viewCheckout);
 route.post("/finalizar-venda", isAuthenticated, controllerVenda.confirmarVenda);
 route.put("/venda/:id", controllerVenda.putVenda);

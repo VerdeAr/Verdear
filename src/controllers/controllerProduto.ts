@@ -1,12 +1,13 @@
-import { Categoria, Produto, UnidadeMedida } from "../models/index.js";
+import type { Request, Response } from "express";
+import prisma from "../core/database";
 
 export default {
-	// Busca produtos do vendedor
-	async fetchProdutosVendedor(id_vendedor) {
+	// Busca produtos do vendedor (Função auxiliar)
+	async fetchProdutosVendedor(id_vendedor: number | string) {
 		try {
-			return await Produto.findAll({
-				where: { id_vendedor },
-				order: [["id_produto", "DESC"]],
+			return await prisma.produto.findMany({
+				where: { id_vendedor: Number(id_vendedor) },
+				orderBy: { id_produto: "desc" },
 			});
 		} catch (error) {
 			console.error("Erro ao carregar catálogo:", error);
@@ -14,21 +15,22 @@ export default {
 		}
 	},
 
-	// Busca categorias
+	// Busca categorias (Função auxiliar)
 	async fetchCategorias() {
 		try {
-			return await Categoria.findAll();
+			return await prisma.categoria.findMany();
 		} catch (error) {
 			console.error("Erro ao buscar categorias:", error);
 			return [];
 		}
 	},
 
-	// Busca unidades de medida
+	// Busca unidades de medida (Função auxiliar)
 	async fetchUnidades() {
 		try {
-			return await UnidadeMedida.findAll({
-				order: [["nome_unidade_medida", "ASC"]],
+			// Obs: Verifique se no seu schema o model gerou como 'unidade_medida' ou 'unidadeMedida'
+			return await prisma.unidadeMedida.findMany({
+				orderBy: { nome_unidade_medida: "asc" },
 			});
 		} catch (error) {
 			console.error("Erro ao buscar unidades:", error);
@@ -37,7 +39,7 @@ export default {
 	},
 
 	// GET /vendedor/produtos
-	async getProdutosVendedor(req, res) {
+	async getProdutosVendedor(req: Request, res: Response) {
 		const id_vendedor = req.session.userId;
 
 		if (!req.session.isAuthenticated || req.session.userRole !== "VENDEDOR") {
@@ -47,9 +49,9 @@ export default {
 		}
 
 		try {
-			const produtos = await Produto.findAll({
-				where: { id_vendedor },
-				order: [["id_produto", "DESC"]],
+			const produtos = await prisma.produto.findMany({
+				where: { id_vendedor: Number(id_vendedor) },
+				orderBy: { id_produto: "desc" },
 			});
 
 			return res.json({ success: true, produtos });
@@ -60,7 +62,7 @@ export default {
 	},
 
 	// POST /vendedor/produtos
-	async postProduto(req, res) {
+	async postProduto(req: Request, res: Response) {
 		const id_vendedor = req.session.userId;
 
 		if (!req.session.isAuthenticated || req.session.userRole !== "VENDEDOR") {
@@ -87,23 +89,26 @@ export default {
 				});
 			}
 
-			if (estoque < 0) {
+			if (Number(estoque) < 0) {
 				return res.status(400).json({
 					success: false,
 					message: "Estoque não pode ser negativo.",
 				});
 			}
 
-			const novoProduto = await Produto.create({
-				nome_produto,
-				descricao,
-				preco,
-				estoque: estoque || 0,
-				id_categoria: id_categoria || null,
-				id_unidade_medida,
-				url_imagem: url_imagem || null,
-				id_vendedor,
-				ativo: true,
+			// O create no Prisma exige a chave 'data'
+			const novoProduto = await prisma.produto.create({
+				data: {
+					nome_produto,
+					descricao,
+					preco: Number(preco),
+					estoque: estoque ? Number(estoque) : 0,
+					id_categoria: id_categoria ? Number(id_categoria) : null,
+					id_unidade_medida: Number(id_unidade_medida),
+					url_imagem: url_imagem || null,
+					id_vendedor: Number(id_vendedor),
+					ativo: true,
+				},
 			});
 
 			return res.status(201).json({
@@ -121,7 +126,7 @@ export default {
 	},
 
 	// PUT /api/vendedor/produtos/:id
-	async putProduto(req, res) {
+	async putProduto(req: Request, res: Response) {
 		const id_vendedor = req.session.userId;
 		const { id } = req.params;
 
@@ -132,8 +137,12 @@ export default {
 		}
 
 		try {
-			const produto = await Produto.findOne({
-				where: { id_produto: id, id_vendedor },
+			// 1. Validar se o produto existe e pertence ao vendedor
+			const produto = await prisma.produto.findFirst({
+				where: {
+					id_produto: Number(id),
+					id_vendedor: Number(id_vendedor),
+				},
 			});
 
 			if (!produto) {
@@ -169,32 +178,31 @@ export default {
 				});
 			}
 
-			if (typeof estoque !== "undefined" && estoque < 0) {
+			if (typeof estoque !== "undefined" && Number(estoque) < 0) {
 				return res.status(400).json({
 					success: false,
 					message: "Estoque não pode ser negativo.",
 				});
 			}
 
-			const updateData = {};
-			if (typeof nome_produto !== "undefined")
-				updateData.nome_produto = nome_produto;
-			if (typeof descricao !== "undefined") updateData.descricao = descricao;
-			if (typeof preco !== "undefined") updateData.preco = preco;
-			if (typeof estoque !== "undefined") updateData.estoque = estoque;
-			if (typeof id_categoria !== "undefined")
-				updateData.id_categoria = id_categoria;
-			if (typeof id_unidade_medida !== "undefined")
-				updateData.id_unidade_medida = id_unidade_medida;
-			if (typeof url_imagem !== "undefined") updateData.url_imagem = url_imagem;
-			if (typeof ativo !== "undefined") updateData.ativo = ativo;
-
-			await produto.update(updateData);
+			const produtoAtualizado = await prisma.produto.update({
+				where: { id_produto: Number(id) },
+				data: {
+					nome_produto,
+					descricao,
+					preco,
+					estoque,
+					id_categoria,
+					id_unidade_medida,
+					url_imagem,
+					ativo,
+				},
+			});
 
 			return res.json({
 				success: true,
 				message: "Produto atualizado com sucesso!",
-				produto,
+				produto: produtoAtualizado,
 			});
 		} catch (error) {
 			console.error("Erro ao atualizar produto:", error);

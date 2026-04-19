@@ -1,0 +1,192 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Pessoa {
+  id_pessoa                     Int                @id @default(autoincrement())
+  nome_pessoa                   String?            @db.VarChar(100)
+  cpf                           String             @unique @db.Char(11)
+  email                         String             @unique @db.VarChar(100)
+  senha                         String?            @db.VarChar(50)
+  endereco                      String?            @db.VarChar(255)
+  id_bairro                     Int?
+  telefone                      String?            @db.VarChar(20)
+  tipo_usuario                  tipo_usuario_enum?
+  ativo                         Boolean?
+  frete_fixo                    Decimal?           @default(0.00) @db.Decimal(10, 2)
+  avaliacoes                    Avaliacao[]
+  chat_chat_id_clienteTopessoa  chat[]             @relation("chat_id_clienteTopessoa")
+  chat_chat_id_vendedorTopessoa chat[]             @relation("chat_id_vendedorTopessoa")
+  frete                         frete[]
+  bairro                        bairro?            @relation(fields: [id_bairro], references: [id_bairro], onDelete: NoAction, onUpdate: NoAction)
+  produtos                      Produto[]
+  vendas                        Venda[]
+  vendedor                      vendedor?
+
+  @@index([id_bairro], map: "idx_pessoa_bairro")
+  @@map("pessoa")
+}
+
+model Categoria {
+  id_categoria   Int       @id @default(autoincrement())
+  nome_categoria String?   @db.VarChar(50)
+  produtos       Produto[]
+
+  @@map("categoria")
+}
+
+model UnidadeMedida {
+  id_unidade_medida   Int       @id @default(autoincrement())
+  nome_unidade_medida String?   @db.VarChar(50)
+  produtos            Produto[]
+
+  @@map("unidademedida")
+}
+
+model Produto {
+  id_produto        Int            @id @default(autoincrement())
+  id_vendedor       Int?
+  id_categoria      Int?
+  nome_produto      String?        @db.VarChar(255)
+  preco             Decimal?       @db.Decimal(10, 2)
+  id_unidade_medida Int?
+  ativo             Boolean?
+  url_imagem        String?        @db.VarChar(255)
+  estoque           Decimal?       @default(0) @db.Decimal(10, 3)
+  descricao         String?        @default(dbgenerated("0")) @db.VarChar(255)
+  categoria         Categoria?     @relation(fields: [id_categoria], references: [id_categoria], onDelete: NoAction, onUpdate: NoAction)
+  unidadeMedida     UnidadeMedida? @relation(fields: [id_unidade_medida], references: [id_unidade_medida], onDelete: NoAction, onUpdate: NoAction)
+  vendedor          Pessoa?        @relation(fields: [id_vendedor], references: [id_pessoa], onDelete: NoAction, onUpdate: NoAction)
+  vendaProdutos     VendaProduto[]
+
+  @@index([id_categoria], map: "idx_produto_categoria")
+  @@index([id_unidade_medida], map: "idx_produto_unidade")
+  @@index([id_vendedor], map: "idx_produto_vendedor")
+  @@map("produto")
+}
+
+model Venda {
+  id_venda      Int                @id @default(autoincrement())
+  id_cliente    Int?
+  data_venda    DateTime?          @db.Timestamp(6)
+  tipo_entrega  tipo_entrega_enum?
+  valor_total   Decimal?           @db.Decimal(10, 2)
+  status        status_venda_enum?
+  avaliacoes    Avaliacao[]
+  pagamento     pagamento[]
+  cliente       Pessoa?            @relation(fields: [id_cliente], references: [id_pessoa], onDelete: NoAction, onUpdate: NoAction)
+  vendaProdutos VendaProduto[]
+
+  @@index([id_cliente], map: "idx_venda_cliente")
+  @@index([data_venda], map: "idx_venda_data")
+  @@map("venda")
+}
+
+model VendaProduto {
+  id_venda_produto Int      @id @default(autoincrement())
+  id_venda         Int?
+  id_produto       Int?
+  quantidade       Decimal? @db.Decimal(10, 2)
+  preco_unitario   Decimal? @db.Decimal(10, 2)
+  produto          Produto? @relation(fields: [id_produto], references: [id_produto], onDelete: NoAction, onUpdate: NoAction)
+  venda            Venda?   @relation(fields: [id_venda], references: [id_venda], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([id_produto], map: "idx_vendaproduto_produto")
+  @@map("vendaproduto")
+}
+
+model Avaliacao {
+  id_avaliacao   Int       @id @default(autoincrement())
+  id_venda       Int?
+  id_cliente     Int?
+  nota           Int?
+  comentario     String?   @db.VarChar(255)
+  data_avaliacao DateTime? @default(now()) @db.Timestamp(6)
+  cliente        Pessoa?   @relation(fields: [id_cliente], references: [id_pessoa], onDelete: NoAction, onUpdate: NoAction)
+  venda          Venda?    @relation(fields: [id_venda], references: [id_venda], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("avaliacao")
+}
+
+model bairro {
+  id_bairro   Int      @id @default(autoincrement())
+  nome_bairro String?  @db.VarChar(50)
+  cidade      String?  @db.VarChar(50)
+  frete       frete[]
+  pessoa      Pessoa[]
+}
+
+model chat {
+  id_chat                         Int               @id @default(autoincrement())
+  id_cliente                      Int?
+  id_vendedor                     Int?
+  data_inicio                     DateTime?         @db.Timestamp(6)
+  status                          status_chat_enum?
+  pessoa_chat_id_clienteTopessoa  Pessoa?           @relation("chat_id_clienteTopessoa", fields: [id_cliente], references: [id_pessoa], onDelete: NoAction, onUpdate: NoAction)
+  pessoa_chat_id_vendedorTopessoa Pessoa?           @relation("chat_id_vendedorTopessoa", fields: [id_vendedor], references: [id_pessoa], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([id_cliente], map: "idx_chat_cliente")
+  @@index([id_vendedor], map: "idx_chat_vendedor")
+}
+
+model formapagamento {
+  id_forma_pagamento Int         @id @default(autoincrement())
+  descricao          String?     @db.VarChar(50)
+  pagamento          pagamento[]
+}
+
+model frete {
+  id_frete    Int      @id @default(autoincrement())
+  id_vendedor Int?
+  id_bairro   Int?
+  preco       Decimal? @db.Decimal(10, 2)
+  bairro      bairro?  @relation(fields: [id_bairro], references: [id_bairro], onDelete: NoAction, onUpdate: NoAction)
+  pessoa      Pessoa?  @relation(fields: [id_vendedor], references: [id_pessoa], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([id_vendedor], map: "idx_frete_vendedor")
+}
+
+model pagamento {
+  id_pagamento       Int             @id @default(autoincrement())
+  id_venda           Int?
+  id_forma_pagamento Int?
+  valor_pago         Decimal?        @db.Decimal(10, 2)
+  formapagamento     formapagamento? @relation(fields: [id_forma_pagamento], references: [id_forma_pagamento], onDelete: NoAction, onUpdate: NoAction)
+  venda              Venda?          @relation(fields: [id_venda], references: [id_venda], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([id_forma_pagamento], map: "idx_pagamento_forma_pagamento")
+}
+
+model vendedor {
+  id_vendedor  Int     @id @default(autoincrement())
+  id_pessoa    Int?    @unique
+  descricao    String?
+  cnpj         String? @db.VarChar(14)
+  nome_fazenda String? @db.VarChar(100)
+  pessoa       Pessoa? @relation(fields: [id_pessoa], references: [id_pessoa], onDelete: NoAction, onUpdate: NoAction)
+}
+
+enum status_chat_enum {
+  ATIVO
+  FINALIZADO
+}
+
+enum status_venda_enum {
+  ABERTA
+  FINALIZADA
+  CANCELADA
+}
+
+enum tipo_entrega_enum {
+  ENTREGA
+  RETIRADA
+}
+
+enum tipo_usuario_enum {
+  CLIENTE
+  VENDEDOR
+}
