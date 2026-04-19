@@ -11,7 +11,6 @@ import { errorHandler } from "../middlewares/errorMiddleware.ts";
 
 const route = express.Router();
 
-
 route.get("/", (req: Request, res: Response) => {
 	if (req.session?.isAuthenticated) {
 		return res.redirect("/home");
