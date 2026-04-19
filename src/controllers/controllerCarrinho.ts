@@ -1,12 +1,20 @@
 import type { Request, Response } from "express";
-import prisma from "../core/database.ts"; // Importando a conexão do Prisma
+import prisma from "../core/database.ts";
 import { ErroNotFound } from "../core/errors/erros.ts";
+
+interface ItemCarrinho {
+	id_produto: number;
+	nome: string;
+	quantidade: number;
+	preco: number;
+	imagem: string | null;
+}
 
 export default {
 	async viewCarrinho(req: Request, res: Response) {
-		const itens = req.session.carrinho || [];
+		const itens: ItemCarrinho[] = req.session.carrinho || [];
 		const total = itens.reduce(
-			(sum: number, item: any) => sum + item.preco * item.quantidade,
+			(sum: number, item: ItemCarrinho) => sum + item.preco * item.quantidade,
 			0,
 		);
 
@@ -31,7 +39,7 @@ export default {
 
 		// Garante a tipagem e converte para Number para não ter bug na comparação
 		const existing = req.session.carrinho.find(
-			(p: any) => p.id_produto === Number(id_produto),
+			(p: ItemCarrinho) => p.id_produto === Number(id_produto),
 		);
 
 		if (existing) {
@@ -60,7 +68,7 @@ export default {
 		}
 
 		req.session.carrinho = req.session.carrinho.filter(
-			(item: any) => item.id_produto !== id,
+			(item: ItemCarrinho) => item.id_produto !== id,
 		);
 
 		return res.json({ success: true });
@@ -72,7 +80,7 @@ export default {
 
 		if (!req.session.carrinho) return res.json({ success: false });
 
-		req.session.carrinho = req.session.carrinho.map((item: any) => {
+		req.session.carrinho = req.session.carrinho.map((item: ItemCarrinho) => {
 			if (item.id_produto === id) {
 				item.quantidade += Number(quantidade);
 				if (item.quantidade < 1) item.quantidade = 1;
