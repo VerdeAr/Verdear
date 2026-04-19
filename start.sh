@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 echo "Executando migrações"
 bunx --bun prisma migrate deploy
