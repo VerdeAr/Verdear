@@ -1,7 +1,7 @@
 import { join } from "node:path";
 import express from "express";
 import session from "express-session";
-import sequelize from "./core/database.js";
+import prisma from "./core/database.js";
 import route from "./routes/route.js";
 
 //Instanciar o aplicativo express
@@ -31,7 +31,7 @@ app.use("/", route); //Usa as rotas do MVC (as definidas em mvc/routes/route.js)
 //Testar a conexão com o banco de dados
 (async () => {
 	try {
-		await sequelize.authenticate();
+		await prisma.$queryRaw`select 1`;
 		console.log("✅ Conexão com o banco bem-sucedida");
 	} catch (error) {
 		console.error("❌ Erro ao conectar com o banco:", error);
