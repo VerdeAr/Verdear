@@ -71,7 +71,7 @@ export default {
 		const userId = req.session.userId;
 
 		if (!userId) {
-			throw new ErroNotFound();
+			throw new ErroNaoAutorizado();
 		}
 
 		const { senhaAtual, novaSenha, confirmarSenha } = req.body;
