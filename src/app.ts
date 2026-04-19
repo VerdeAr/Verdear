@@ -1,7 +1,7 @@
 import { join } from "node:path";
 import express from "express";
 import session from "express-session";
-import prisma from "./core/database.js";
+import prisma from "./core/database.ts";
 import route from "./routes/route.ts";
 
 //Instanciar o aplicativo express
