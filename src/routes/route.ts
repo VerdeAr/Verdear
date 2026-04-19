@@ -11,7 +11,6 @@ import { errorHandler } from "../middlewares/errorMiddleware.ts";
 
 const route = express.Router();
 
-route.use(errorHandler);
 
 route.get("/", (req: Request, res: Response) => {
 	if (req.session?.isAuthenticated) {
@@ -98,5 +97,7 @@ route.get(
 	isAuthenticated,
 	controllerVenda.getPedidosVendedor,
 );
+
+route.use(errorHandler);
 
 export default route;
