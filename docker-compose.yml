@@ -6,7 +6,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: root
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -14,8 +14,7 @@ services:
     ports:
       - '5432:5432'
     volumes:
-      - pgdata:/var/lib/postgresql/data
-      - ./migration.sql:/docker-entrypoint-initdb.d/init.sql
+      - pgdata:/var/lib/postgresql/18/docker
 
   verdear:
     build:

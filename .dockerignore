@@ -1,0 +1,9 @@
+*
+
+!package.json
+!bun.lock
+!src/
+!prisma/
+!prisma.config.ts
+!start.sh
+!tsconfig.json

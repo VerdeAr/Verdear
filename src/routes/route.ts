@@ -7,8 +7,11 @@ import controllerPessoa from "../controllers/controllerPessoa.ts";
 import controllerProduto from "../controllers/controllerProduto.ts";
 import controllerVenda from "../controllers/controllerVenda.ts";
 import isAuthenticated from "../middlewares/authMiddleware.ts";
+import { errorHandler } from "../middlewares/errorMiddleware.ts";
 
 const route = express.Router();
+
+route.use(errorHandler);
 
 route.get("/", (req: Request, res: Response) => {
 	if (req.session?.isAuthenticated) {
