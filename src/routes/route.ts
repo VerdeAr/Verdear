@@ -1,15 +1,16 @@
+import type { Request, Response } from "express";
 import express from "express";
-import controllerAvaliacao from "../controllers/controllerAvaliacao.js";
-import controllerCarrinho from "../controllers/controllerCarrinho.js";
-import controllerHome from "../controllers/controllerHome.js";
-import controllerPessoa from "../controllers/controllerPessoa.js";
-import controllerProduto from "../controllers/controllerProduto.js";
-import controllerVenda from "../controllers/controllerVenda.js";
-import isAuthenticated from "../middlewares/authMiddleware.js";
+import controllerAvaliacao from "../controllers/controllerAvaliacao.ts";
+import controllerCarrinho from "../controllers/controllerCarrinho.ts";
+import controllerHome from "../controllers/controllerHome.ts";
+import controllerPessoa from "../controllers/controllerPessoa.ts";
+import controllerProduto from "../controllers/controllerProduto.ts";
+import controllerVenda from "../controllers/controllerVenda.ts";
+import isAuthenticated from "../middlewares/authMiddleware.ts";
 
 const route = express.Router();
 
-route.get("/", (req, res) => {
+route.get("/", (req: Request, res: Response) => {
 	if (req.session?.isAuthenticated) {
 		return res.redirect("/home");
 	}
@@ -18,7 +19,7 @@ route.get("/", (req, res) => {
 
 route.post("/login", controllerPessoa.authenticate);
 
-route.get("/cadastrar", (_req, res) => {
+route.get("/cadastrar", (_: Request, res: Response) => {
 	res.render("cadastro", { error: null });
 });
 
@@ -32,7 +33,7 @@ route.get(
 	controllerHome.viewProdutosPorCategoria,
 );
 
-route.get("/logout", (req, res) => {
+route.get("/logout", (req: Request, res: Response) => {
 	req.session.destroy((err) => {
 		if (err) {
 			console.log("Erro ao encerrar sessão:", err);
@@ -44,71 +45,11 @@ route.get("/logout", (req, res) => {
 	});
 });
 
-route.get("/gestao-cadastro", isAuthenticated, async (req, res) => {
-	const userId = req.session.userId;
-	const role = req.session.userRole;
-
-	let catalogo = [];
-	const pedidos = [];
-
-	const { Venda, VendaProduto, Produto, Avaliacao } = await import(
-		"../models/index.js"
-	);
-	const vendas = await Venda.findAll({
-		where: { id_cliente: userId },
-		order: [["data_venda", "DESC"]],
-	});
-
-	for (const venda of vendas) {
-		const itens = await VendaProduto.findAll({
-			where: { id_venda: venda.id_venda },
-		});
-
-		const itensComProdutos = await Promise.all(
-			itens.map(async (item) => {
-				const produto = await Produto.findByPk(item.id_produto);
-				return {
-					...item.dataValues,
-					produto: produto ? produto.dataValues : null,
-				};
-			}),
-		);
-
-		const avaliacao = await Avaliacao.findOne({
-			where: {
-				id_venda: venda.id_venda,
-				id_cliente: userId,
-			},
-		});
-
-		pedidos.push({
-			...venda.dataValues,
-			itens: itensComProdutos,
-			avaliacao: avaliacao ? avaliacao.dataValues : null,
-		});
-	}
-
-	if (role === "VENDEDOR") {
-		catalogo = await controllerProduto.fetchProdutosVendedor(userId);
-	}
-
-	const frete_fixo = await controllerPessoa.getFrete(userId);
-
-	const categorias = await controllerProduto.fetchCategorias();
-	const unidades = await controllerProduto.fetchUnidades();
-
-	res.render("gestao_cadastro", {
-		name: req.session.userName,
-		email: req.session.userEmail,
-		role: role,
-		id: userId,
-		catalogo,
-		categorias,
-		unidades,
-		pedidos,
-		frete_fixo,
-	});
-});
+route.get(
+	"/gestao-cadastro",
+	isAuthenticated,
+	controllerPessoa.viewGestaoPessoa,
+);
 
 route.get("/produtos/busca", isAuthenticated, controllerHome.searchProducts);
 

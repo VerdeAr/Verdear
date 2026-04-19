@@ -1,3 +1,4 @@
+import type { Categoria, Produto, UnidadeMedida } from "@prisma/client";
 import type { Request, Response } from "express";
 import prisma from "../core/database";
 import {
@@ -191,5 +192,76 @@ export default {
 			select: { frete_fixo: true },
 		});
 		return pessoa ? pessoa.frete_fixo : null;
+	},
+
+	async viewGestaoPessoa(req: Request, res: Response) {
+		const userId = Number(req.session.userId);
+		const role = req.session.userRole;
+
+		let catalogo: (Produto & {
+			categoria: Categoria | null;
+			unidadeMedida: UnidadeMedida | null;
+		})[] = [];
+
+		// Otimização: Buscamos todas as vendas com os itens, produtos dos itens e avaliações de uma vez só.
+		const vendas = await prisma.venda.findMany({
+			where: { id_cliente: userId },
+			orderBy: { data_venda: "desc" },
+			include: {
+				vendaProdutos: {
+					include: {
+						produto: true,
+					},
+				},
+				avaliacoes: {
+					where: {
+						id_cliente: userId,
+					},
+				},
+			},
+		});
+
+		// Mapeamos para manter a estrutura que sua View (EJS/HBS) provavelmente espera
+		const pedidos = vendas.map((venda) => ({
+			...venda,
+			itens: venda.vendaProdutos.map((item) => ({
+				...item,
+				produto: item.produto,
+			})),
+			avaliacao: venda.avaliacoes.length > 0 ? venda.avaliacoes[0] : null,
+		}));
+
+		if (role === "VENDEDOR") {
+			// Usando Prisma diretamente (se preferir, pode voltar para sua função de controllerProduto)
+			catalogo = await prisma.produto.findMany({
+				where: { id_vendedor: userId },
+				include: {
+					categoria: true,
+					unidadeMedida: true,
+				},
+			});
+		}
+
+		const pessoaInfo = await prisma.pessoa.findUnique({
+			where: { id_pessoa: userId },
+			select: { frete_fixo: true },
+		});
+		const frete_fixo = pessoaInfo ? pessoaInfo.frete_fixo : null;
+
+		// Usando Prisma diretamente para categorias e unidades (ou chame seu controller se tiver lógicas complexas neles)
+		const categorias = await prisma.categoria.findMany();
+		const unidades = await prisma.unidadeMedida.findMany();
+
+		res.render("gestao_cadastro", {
+			name: req.session.userName,
+			email: req.session.userEmail,
+			role: role,
+			id: userId,
+			catalogo,
+			categorias,
+			unidades,
+			pedidos,
+			frete_fixo,
+		});
 	},
 };

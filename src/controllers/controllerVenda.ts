@@ -1,12 +1,14 @@
-import type { Produto } from "@prisma/client";
+import type { Produto, Venda, VendaProduto } from "@prisma/client";
 import { tipo_entrega_enum } from "@prisma/client";
 import type { Request, Response } from "express";
 import prisma from "../core/database";
 
 const getCheckoutData = async (req: Request) => {
 	const itens = req.session.carrinho || [];
+
 	const subtotal = itens.reduce(
-		(sum: number, item: Produto) => sum + item.preco * item.quantidade,
+		(sum: number, item: Produto & { quantidade: number }) =>
+			sum + Number(item.preco || 0) * Number(item.quantidade || 1),
 		0,
 	);
 
@@ -21,7 +23,6 @@ const getCheckoutData = async (req: Request) => {
 	const custoFrete = tipoEntrega === "ENTREGA" ? 15.0 : 0.0;
 	const total = subtotal + custoFrete;
 
-	// Buscar email dos vendedores dos produtos
 	const vendedoresEmails = new Set<string>();
 
 	for (const item of itens) {
@@ -52,7 +53,6 @@ const getCheckoutData = async (req: Request) => {
 		vendedoresEmails: Array.from(vendedoresEmails),
 	};
 };
-
 export default {
 	async viewCheckout(req: Request, res: Response) {
 		if (!req.session.carrinho || req.session.carrinho.length === 0) {
@@ -88,18 +88,19 @@ export default {
 			},
 		});
 
-		const itensVendaData = itens.map((item: any) => ({
-			id_venda: novaVenda.id_venda,
-			id_produto: Number(item.id_produto),
-			quantidade: Number(item.quantidade),
-			preco_unitario: Number(item.preco),
-		}));
+		const itensVendaData = itens.map(
+			(item: Produto & { quantidade: number }) => ({
+				id_venda: novaVenda.id_venda,
+				id_produto: Number(item.id_produto),
+				quantidade: Number(item.quantidade),
+				preco_unitario: Number(item.preco),
+			}),
+		);
 
 		await prisma.vendaProduto.createMany({
 			data: itensVendaData,
 		});
 
-		// 3. Limpar o carrinho (sessão)
 		req.session.carrinho = [];
 		req.session.tipoEntrega = undefined;
 		req.session.formaPagamento = undefined;
@@ -183,7 +184,8 @@ export default {
 			});
 
 			temPermissao = itensVenda.some(
-				(item: any) => item.produto?.id_vendedor === userId,
+				(item: VendaProduto & { produto: Produto | null }) =>
+					item.produto?.id_vendedor === userId,
 			);
 		}
 
@@ -221,7 +223,9 @@ export default {
 			select: { id_produto: true },
 		});
 
-		const idsProdutos = produtosVendedor.map((p: any) => p.id_produto);
+		const idsProdutos = produtosVendedor.map(
+			(p: { id_produto: number }) => p.id_produto,
+		);
 
 		if (idsProdutos.length === 0) {
 			return res.json({ success: true, pedidos: [] });
@@ -233,7 +237,11 @@ export default {
 		});
 
 		const idsVendas = [
-			...new Set(itensVenda.map((item: any) => item.id_venda)),
+			...new Set(
+				itensVenda
+					.map((item: { id_venda: number | null }) => item.id_venda)
+					.filter((id): id is number => id !== null),
+			),
 		];
 
 		if (idsVendas.length === 0) {
@@ -246,7 +254,7 @@ export default {
 		});
 
 		const pedidos = await Promise.all(
-			vendas.map(async (venda: any) => {
+			vendas.map(async (venda: Venda) => {
 				const itens = await prisma.vendaProduto.findMany({
 					where: {
 						id_venda: venda.id_venda,
@@ -255,10 +263,12 @@ export default {
 					include: { produto: true },
 				});
 
-				const cliente = await prisma.pessoa.findUnique({
-					where: { id_pessoa: venda.id_cliente },
-					select: { nome_pessoa: true, email: true },
-				});
+				const cliente = venda.id_cliente
+					? await prisma.pessoa.findUnique({
+							where: { id_pessoa: venda.id_cliente },
+							select: { nome_pessoa: true, email: true },
+						})
+					: null;
 
 				return {
 					...venda,
