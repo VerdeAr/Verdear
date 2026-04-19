@@ -14,10 +14,10 @@
 	"dependencies": {
 		"@prisma/adapter-pg": "^7.7.0",
 		"@prisma/client": "^7.7.0",
-		"bcrypt": "^5.1.1",
+		"bcrypt": "^6.0.0",
 		"cors": "^2.8.5",
 		"dotenv": "^17.4.2",
-		"ejs": "^3.1.10",
+		"ejs": "^5.0.2",
 		"express": "^5.2.1",
 		"express-session": "^1.18.2",
 		"handlebars": "^4.7.9",
@@ -32,7 +32,7 @@
 	},
 	"homepage": "https://github.com/VerdeAr/Verdear#readme",
 	"devDependencies": {
-		"@biomejs/biome": "2.4.10",
+		"@biomejs/biome": "2.4.12",
 		"@commitlint/cli": "^20.5.0",
 		"@commitlint/config-conventional": "^20.5.0",
 		"@types/express": "^5.0.6",
