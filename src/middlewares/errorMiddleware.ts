@@ -16,7 +16,7 @@ export const errorHandler = (
 	}
 
 	if (err instanceof Prisma.PrismaClientKnownRequestError) {
-		console.error(err.message);
+		console.error(err);
 		return res.status(400).json({
 			sucesso: false,
 			mensagem: "Oops ocorreu um erro",
