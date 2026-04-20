@@ -1,0 +1,9 @@
+:root {
+	--color-primary: #fefaf6;
+	--color-secondary: #f39c12; /* Laranja do botão ENTRAR */
+	--color-bg-dark: #386641;
+	--color-bg-light: #ffffff; /* Cor de fundo da caixa de login */
+}
+body {
+	margin: 0;
+}
