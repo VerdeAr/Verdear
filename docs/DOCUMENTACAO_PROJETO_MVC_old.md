@@ -1,6 +1,8 @@
 # DOCUMENTAÇÃO DO PROJETO VERDEAR
 ## Sistema de E-commerce para Produtos Orgânicos e da Agricultura Familiar
 
+## Essa documentação precisa ser atualizada!
+
 ---
 
 ## 1. VISÃO GERAL DO PROJETO
