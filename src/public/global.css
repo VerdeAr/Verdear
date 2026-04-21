@@ -3,6 +3,8 @@
 	--color-secondary: #f39c12; /* Laranja do botão ENTRAR */
 	--color-bg-dark: #386641;
 	--color-bg-light: #ffffff; /* Cor de fundo da caixa de login */
+	--color-light-green: #80cfa9;
+	--color-text-dark: #131112;
 }
 body {
 	margin: 0;
