@@ -6,7 +6,7 @@
 
 Esse projeto está sendo desenvolvido para a máteria de **Fábrica de Software I** e **Fábrica de Software de Software II** da **Universidade Tecnológica Federal do Paraná (UTFPR)**.
 
-O principal objetivo do **Verdear** é facilitar a conexão do produtor rural com consumidores, dessa forma facilitando a venda de sua produção. Assim, o consumidor pode comprar algo diretamente do produtor garantindo um produto de melhor qualidade, menor preço e até mais saudável.
+O principal objetivo do **Verdear** é facilitar a conexão do agricultor familiar com consumidores, dessa forma facilitando a venda de sua produção. Assim, o consumidor pode comprar algo diretamente do produtor garantindo um produto de melhor qualidade, menor preço e até mais saudável.
 
 ## Tech Stack
 
