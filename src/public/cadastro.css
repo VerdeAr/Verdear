@@ -1,8 +1,13 @@
 @import "global.css";
 
-.background-container {
+.main-box {
 	min-height: 100dvh;
-	min-width: 100dvh;
+	display: grid;
+	place-items: center;
+	background-color: var(--color-primary);
+}
+
+.background-container {
 	display: grid;
 	grid-template-areas:
 		"logo"
@@ -22,6 +27,7 @@
 	box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 	text-align: center;
 	background-color: var(--color-bg-light);
+	margin-bottom: 25px;
 }
 
 .cadastro-form {
@@ -44,6 +50,7 @@
 	max-width: 400px;
 	height: auto;
 	position: relative;
+	margin-bottom: 128px;
 }
 
 .cadastro-title {
@@ -51,7 +58,7 @@
 	justify-self: stretch; /* ocupa toda a coluna */
 	text-align: left;
 	color: var(--color-bg-dark);
-	font-size: 3em;
+	font-size: 2em;
 	font-weight: bold;
 }
 
