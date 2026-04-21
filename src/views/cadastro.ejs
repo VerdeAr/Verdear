@@ -34,16 +34,15 @@
 
 <body>
     <div class="background-container">
-        <div class="logo-container">
-                <img src="/logo-sem-fundo.png" alt="Logo Verdear" class="logo">
-            </div>
-        <div class="cadastro-box">
-
-            <% if (typeof error !=='undefined' && error) { %>
+        <% if (typeof error !=='undefined' && error) { %>
                 <div class="error">
                     <%= error %>
                 </div>
                 <% } %>
+        <div class="logo-container">
+                <img src="/logo-sem-fundo.png" alt="Logo Verdear" class="logo">
+            </div>
+        <div class="cadastro-box">
 
                     <form action="/cadastrar" method="POST" class="cadastro-form">
                         <h2 class="cadastro-title">Cadastro</h2>

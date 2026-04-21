@@ -4,11 +4,16 @@
 	min-height: 100dvh;
 	min-width: 100dvh;
 	display: grid;
+	grid-template-areas:
+		"logo"
+		"erro"
+		"cadastro";
 	place-items: center;
 	background-color: var(--color-primary);
 }
 
 .cadastro-box {
+	grid-area: cadastro;
 	justify-content: center;
 	min-width: 35%;
 	display: grid;
@@ -21,7 +26,6 @@
 
 .cadastro-form {
 	min-width: 100%;
-	grid-area: middle;
 	display: grid;
 	grid-template-areas:
 		"title usuario"
@@ -30,6 +34,10 @@
 		"btn btn"
 		"link link";
 	gap: 15px;
+}
+
+.logo-container {
+	grid-area: logo;
 }
 
 .logo {
@@ -121,8 +129,10 @@
 }
 
 .error {
+	grid-area: erro;
 	color: red;
 	margin-bottom: 15px;
 	font-weight: bold;
 	text-align: left;
+	justify-self: center;
 }
