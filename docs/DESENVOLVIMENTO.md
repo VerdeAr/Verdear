@@ -4,10 +4,11 @@
 1. É necessário instalar o motor de Javascript [Bun][1] para usar esse projeto.
 2. Também, é preciso instalar o [Docker][2] para subir um banco de dados local.
 3. Execute o commando ```bun install``` para baixar as dependências.
-4. Depois execute o commando ```bunx --bun prisma generate```, com isso o Prisma ORM gera toda a modelagem do projeto a partir do esquema encontrado em: ``prisma/schema.prisma``.
-5. Execute ```docker compose up banco -d``` para iniciar o banco de dados.
-6. Para migrar a modelagem para o banco use ```bunx --bun migrate dev```, assim toda as tabelas necessárias serão automáticamente criadas no seu banco local.
-7. Use o comando ```bun run dev``` para rodar o projeto no modo de desenvolvimento, no qual ao salvar suas alterações no código ele automaticamente reinicia o servidor, facilitando o teste de novas funcionalidades.
+4. Crie um arquivo ``.env`` na raíz do projeto, nele preencha as variáveis de ambiente, conforme especificado no ```exemplo.env```. Sem a ``.env`` não é posível conectar ao banco.
+5. Depois execute o commando ```bunx --bun prisma generate```, com isso o Prisma ORM gera toda a modelagem do projeto a partir do esquema encontrado em: ``prisma/schema.prisma``.
+6. Execute ```docker compose up banco -d``` para iniciar o banco de dados.
+7. Para migrar a modelagem para o banco use ```bunx --bun migrate dev```, assim toda as tabelas necessárias serão automáticamente criadas no seu banco local.
+8. Use o comando ```bun run dev``` para rodar o projeto no modo de desenvolvimento, no qual ao salvar suas alterações no código ele automaticamente reinicia o servidor, facilitando o teste de novas funcionalidades.
 
 ### Executar projeto localmente
 Também é possível executar o projeto localmente para testes sem precisar configurar todo o ambiente de desenvolvimento. Isso é útil para testar a aplicação simulando um ambiente de produção.
