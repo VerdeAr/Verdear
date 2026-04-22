@@ -83,9 +83,21 @@ route.put("/pessoa/frete", isAuthenticated, controllerPessoa.putFrete);
 
 route.post("/avaliacao", isAuthenticated, controllerAvaliacao.postAvaliacao);
 
-route.get("/vendedor/produtos", controllerProduto.getProdutosVendedor);
-route.post("/vendedor/produtos", controllerProduto.postProduto);
-route.put("/vendedor/produtos/:id", controllerProduto.putProduto);
+route.get(
+	"/vendedor/produtos",
+	isAuthenticated,
+	controllerProduto.getProdutosVendedor,
+);
+route.post(
+	"/vendedor/produtos",
+	isAuthenticated,
+	controllerProduto.postProduto,
+);
+route.put(
+	"/vendedor/produtos/:id",
+	isAuthenticated,
+	controllerProduto.putProduto,
+);
 
 route.get("/finalizar-venda", isAuthenticated, controllerVenda.viewCheckout);
 route.post("/finalizar-venda", isAuthenticated, controllerVenda.confirmarVenda);
@@ -95,6 +107,11 @@ route.get(
 	"/vendedor/pedidos",
 	isAuthenticated,
 	controllerVenda.getPedidosVendedor,
+);
+route.get(
+	"/vendedor/pedidos/pendentes/count",
+	isAuthenticated,
+	controllerVenda.getPedidosVendedorPendentesCount,
 );
 
 route.use(errorHandler);

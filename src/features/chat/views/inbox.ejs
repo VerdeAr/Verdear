@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verdear | Conversas</title>
+    <link rel="icon" type="logo/png" href="/logo_simplificada.png"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/features/chat/inbox.css">
+</head>
+<body>
+    <header class="chat-header">
+        <a href="/home" class="back-btn" aria-label="Voltar"><i class="fas fa-arrow-left"></i></a>
+        <h1>Conversas</h1>
+        <a href="/gestao-cadastro" class="profile-btn" aria-label="Perfil"><i class="far fa-user"></i></a>
+    </header>
+
+    <main class="inbox">
+        <% if (chats && chats.length > 0) { %>
+            <ul class="chat-list">
+                <% chats.forEach(chat => { %>
+                    <li class="chat-item" data-id="<%= chat.id_chat %>">
+                        <a href="/chat/<%= chat.id_chat %>">
+                            <div class="avatar-wrapper">
+                                <div class="avatar">
+                                    <%= (chat.nome_interlocutor || '?').charAt(0).toUpperCase() %>
+                                </div>
+                                <% if (chat.online) { %>
+                                    <span class="status-dot online" title="Online"></span>
+                                <% } %>
+                            </div>
+                            <div class="chat-info">
+                                <div class="chat-top">
+                                    <span class="chat-name"><%= chat.nome_interlocutor %></span>
+                                    <span class="chat-time"><%= chat.data_formatada %></span>
+                                </div>
+                                <div class="chat-bottom">
+                                    <span class="chat-preview <%= chat.nao_lidas > 0 ? 'unread' : '' %>">
+                                        <% if (chat.ultima_mensagem_propria) { %>
+                                            <i class="fas fa-reply"></i>
+                                        <% } %>
+                                        <%= chat.ultima_mensagem %>
+                                    </span>
+                                    <% if (chat.nao_lidas > 0) { %>
+                                        <span class="unread-badge"><%= chat.nao_lidas %></span>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                <% }); %>
+            </ul>
+        <% } else { %>
+            <div class="empty-state">
+                <i class="far fa-comment-dots"></i>
+                <h2>Nenhuma conversa ainda</h2>
+                <% if (userRole === 'VENDEDOR') { %>
+                    <p>Quando um cliente iniciar uma conversa sobre seus produtos, ela aparecerá aqui.</p>
+                <% } else { %>
+                    <p>Encontre um produto na <a href="/home">vitrine</a> e converse com o vendedor.</p>
+                <% } %>
+            </div>
+        <% } %>
+    </main>
+
+    <script src="/features/chat/inbox.js"></script>
+</body>
+</html>

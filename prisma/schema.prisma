@@ -11,16 +11,18 @@ model Pessoa {
   nome_pessoa                   String?            @db.VarChar(100)
   cpf                           String             @unique @db.Char(11)
   email                         String             @unique @db.VarChar(100)
-  senha                         String?            @db.VarChar(50)
+  senha                         String?            @db.VarChar(255)
   endereco                      String?            @db.VarChar(255)
   id_bairro                     Int?
   telefone                      String?            @db.VarChar(20)
   tipo_usuario                  tipo_usuario_enum?
   ativo                         Boolean?
   frete_fixo                    Decimal?           @default(0.00) @db.Decimal(10, 2)
+  ultimo_acesso                 DateTime?          @db.Timestamp(6)
   avaliacoes                    Avaliacao[]
   chat_chat_id_clienteTopessoa  chat[]             @relation("chat_id_clienteTopessoa")
   chat_chat_id_vendedorTopessoa chat[]             @relation("chat_id_vendedorTopessoa")
+  mensagens                     Mensagem[]
   frete                         frete[]
   bairro                        bairro?            @relation(fields: [id_bairro], references: [id_bairro], onDelete: NoAction, onUpdate: NoAction)
   produtos                      Produto[]
@@ -125,12 +127,29 @@ model chat {
   id_cliente                      Int?
   id_vendedor                     Int?
   data_inicio                     DateTime?         @db.Timestamp(6)
+  data_ultima_mensagem            DateTime?         @db.Timestamp(6)
   status                          status_chat_enum?
   pessoa_chat_id_clienteTopessoa  Pessoa?           @relation("chat_id_clienteTopessoa", fields: [id_cliente], references: [id_pessoa], onDelete: NoAction, onUpdate: NoAction)
   pessoa_chat_id_vendedorTopessoa Pessoa?           @relation("chat_id_vendedorTopessoa", fields: [id_vendedor], references: [id_pessoa], onDelete: NoAction, onUpdate: NoAction)
+  mensagens                       Mensagem[]
 
   @@index([id_cliente], map: "idx_chat_cliente")
   @@index([id_vendedor], map: "idx_chat_vendedor")
+}
+
+model Mensagem {
+  id_mensagem Int       @id @default(autoincrement())
+  id_chat     Int
+  id_autor    Int
+  conteudo    String    @db.Text
+  data_envio  DateTime  @default(now()) @db.Timestamp(6)
+  lida        Boolean   @default(false)
+  chat        chat      @relation(fields: [id_chat], references: [id_chat], onDelete: Cascade, onUpdate: NoAction)
+  autor       Pessoa    @relation(fields: [id_autor], references: [id_pessoa], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([id_chat], map: "idx_mensagem_chat")
+  @@index([id_autor], map: "idx_mensagem_autor")
+  @@map("mensagem")
 }
 
 model formapagamento {

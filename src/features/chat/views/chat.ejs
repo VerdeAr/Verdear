@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verdear | <%= nome_interlocutor %></title>
+    <link rel="icon" type="logo/png" href="/logo_simplificada.png"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/features/chat/chat.css">
+</head>
+<body data-chat-id="<%= id_chat %>" data-user-id="<%= userId %>">
+    <header class="chat-header">
+        <a href="/chat" class="back-btn" aria-label="Voltar"><i class="fas fa-arrow-left"></i></a>
+        <div class="interlocutor">
+            <div class="avatar-wrapper">
+                <div class="avatar">
+                    <%= (nome_interlocutor || '?').charAt(0).toUpperCase() %>
+                </div>
+                <span class="status-dot <%= online ? 'online' : 'offline' %>" id="status-dot"></span>
+            </div>
+            <div class="interlocutor-info">
+                <span class="name"><%= nome_interlocutor %></span>
+                <span class="status" id="status-text"><%= online ? 'Online' : 'Offline' %></span>
+            </div>
+        </div>
+        <button type="button" class="menu-btn" id="btn-finalizar" title="Finalizar conversa">
+            <i class="fas fa-ellipsis-v"></i>
+        </button>
+    </header>
+
+    <main class="messages" id="messages">
+        <% if (mensagens && mensagens.length > 0) { %>
+            <% let ultimaData = ''; %>
+            <% mensagens.forEach(msg => { %>
+                <% const dataMsg = new Date(msg.data_envio).toLocaleDateString('pt-BR'); %>
+                <% if (dataMsg !== ultimaData) { %>
+                    <div class="date-separator"><span><%= dataMsg %></span></div>
+                    <% ultimaData = dataMsg; %>
+                <% } %>
+                <div class="message <%= msg.propria ? 'own' : 'other' %>" data-id="<%= msg.id_mensagem %>">
+                    <div class="bubble">
+                        <p><%= msg.conteudo %></p>
+                        <span class="hora"><%= msg.hora %></span>
+                    </div>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <div class="empty-chat">
+                <i class="far fa-comments"></i>
+                <p>Envie a primeira mensagem para iniciar a conversa.</p>
+            </div>
+        <% } %>
+    </main>
+
+    <form class="composer" id="composer" autocomplete="off">
+        <textarea id="input-mensagem" placeholder="Digite uma mensagem..." rows="1" maxlength="2000" required></textarea>
+        <button type="submit" id="btn-enviar" aria-label="Enviar">
+            <i class="fas fa-paper-plane"></i>
+        </button>
+    </form>
+
+    <script src="/features/chat/chat.js"></script>
+</body>
+</html>

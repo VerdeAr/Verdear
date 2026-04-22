@@ -45,6 +45,7 @@ Para mais informações sobre o projeto sugiro fazer a leitura dos arquivos na p
 |João Rickli| Product Manager |
 |Julia Goulart| Quality Assurance |
 |Tais Carvalho| UX/UI Designer |
+|William Pagani| Desenvolvedor FullStack |
 
 [1]: https://bun.com
 [2]: https://typescriptlang.org
