@@ -282,4 +282,47 @@ export default {
 
 		return res.json({ success: true, pedidos });
 	},
+
+	async getPedidosVendedorPendentesCount(req: Request, res: Response) {
+		const userId = Number(req.session.userId);
+		const userRole = req.session.userRole;
+
+		if (!userId || userRole !== "VENDEDOR") {
+			return res.status(401).json({ success: false, count: 0 });
+		}
+
+		const produtosVendedor = await prisma.produto.findMany({
+			where: { id_vendedor: userId },
+			select: { id_produto: true },
+		});
+		const idsProdutos = produtosVendedor.map(
+			(p: { id_produto: number }) => p.id_produto,
+		);
+
+		if (idsProdutos.length === 0) {
+			return res.json({ success: true, count: 0 });
+		}
+
+		const itensVenda = await prisma.vendaProduto.findMany({
+			where: { id_produto: { in: idsProdutos } },
+			select: { id_venda: true },
+		});
+		const idsVendas = [
+			...new Set(
+				itensVenda
+					.map((item: { id_venda: number | null }) => item.id_venda)
+					.filter((id): id is number => id !== null),
+			),
+		];
+
+		if (idsVendas.length === 0) {
+			return res.json({ success: true, count: 0 });
+		}
+
+		const count = await prisma.venda.count({
+			where: { id_venda: { in: idsVendas }, status: "ABERTA" },
+		});
+
+		return res.json({ success: true, count });
+	},
 };

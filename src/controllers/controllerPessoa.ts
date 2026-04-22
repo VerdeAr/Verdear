@@ -1,4 +1,5 @@
 import type { Categoria, Produto, UnidadeMedida } from "@prisma/client";
+import bcrypt from "bcrypt";
 import type { Request, Response } from "express";
 import prisma from "../core/database";
 import {
@@ -6,6 +7,8 @@ import {
 	ErroNotFound,
 	ErroValidacao,
 } from "../core/errors/erros";
+
+const BCRYPT_ROUNDS = 10;
 
 export default {
 	async authenticate(req: Request, res: Response) {
@@ -21,7 +24,12 @@ export default {
 			where: { email },
 		});
 
-		if (!pessoa || pessoa.senha !== senha) {
+		if (!pessoa || !pessoa.senha) {
+			return res.render("login", { error: "E-mail ou senha inválidos" });
+		}
+
+		const senhaValida = await bcrypt.compare(senha, pessoa.senha);
+		if (!senhaValida) {
 			return res.render("login", { error: "E-mail ou senha inválidos" });
 		}
 
@@ -85,7 +93,12 @@ export default {
 			throw new ErroNotFound("Usuário não encontrado");
 		}
 
-		if (pessoa.senha !== senhaAtual) {
+		if (!pessoa.senha) {
+			throw new ErroValidacao("Usuário sem senha cadastrada");
+		}
+
+		const senhaAtualValida = await bcrypt.compare(senhaAtual, pessoa.senha);
+		if (!senhaAtualValida) {
 			throw new ErroValidacao("As senhas não conferem");
 		}
 
@@ -93,9 +106,11 @@ export default {
 			throw new ErroValidacao("A nova senha e a confirmação não coincidem");
 		}
 
+		const novaSenhaHash = await bcrypt.hash(novaSenha, BCRYPT_ROUNDS);
+
 		await prisma.pessoa.update({
 			where: { id_pessoa: Number(userId) },
-			data: { senha: novaSenha },
+			data: { senha: novaSenhaHash },
 		});
 
 		return res.json({
@@ -139,12 +154,14 @@ export default {
 			}
 		}
 
+		const senhaHash = await bcrypt.hash(senha, BCRYPT_ROUNDS);
+
 		await prisma.pessoa.create({
 			data: {
 				nome_pessoa,
 				cpf: cpfLimpo,
 				email,
-				senha,
+				senha: senhaHash,
 				tipo_usuario,
 				frete_fixo: tipo_usuario === "VENDEDOR" ? 0.0 : null,
 			},
@@ -203,9 +220,19 @@ export default {
 			unidadeMedida: UnidadeMedida | null;
 		})[] = [];
 
-		// Otimização: Buscamos todas as vendas com os itens, produtos dos itens e avaliações de uma vez só.
+		// Para vendedor: busca vendas que contenham algum produto seu.
+		// Para cliente: busca vendas em que ele é o comprador.
+		const whereVendas =
+			role === "VENDEDOR"
+				? {
+						vendaProdutos: {
+							some: { produto: { id_vendedor: userId } },
+						},
+					}
+				: { id_cliente: userId };
+
 		const vendas = await prisma.venda.findMany({
-			where: { id_cliente: userId },
+			where: whereVendas,
 			orderBy: { data_venda: "desc" },
 			include: {
 				vendaProdutos: {
@@ -213,9 +240,18 @@ export default {
 						produto: true,
 					},
 				},
-				avaliacoes: {
-					where: {
-						id_cliente: userId,
+				avaliacoes:
+					role === "VENDEDOR"
+						? true
+						: {
+								where: {
+									id_cliente: userId,
+								},
+							},
+				cliente: {
+					select: {
+						id_pessoa: true,
+						nome_pessoa: true,
 					},
 				},
 			},
