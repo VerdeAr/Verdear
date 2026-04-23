@@ -4,6 +4,7 @@
 	min-height: 100dvh;
 	display: grid;
 	place-items: center;
+	align-content: start;
 	background-color: var(--color-primary);
 }
 
@@ -20,8 +21,8 @@
 .cadastro-box {
 	grid-area: cadastro;
 	justify-content: center;
-	min-width: 35%;
 	display: grid;
+	grid-template-columns: 900px;
 	padding: 40px;
 	border-radius: 20px;
 	box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
@@ -50,7 +51,7 @@
 	max-width: 400px;
 	height: auto;
 	position: relative;
-	margin-bottom: 128px;
+	margin: 100px;
 }
 
 .cadastro-title {
