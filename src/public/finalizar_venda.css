@@ -1,0 +1,116 @@
+@import "global.css";
+
+.checkout-container {
+	display: grid;
+	grid-template-rows: auto auto auto auto;
+	grid-template-columns: 800px;
+	margin: 30px auto;
+	padding: 0 20px;
+}
+
+.checkout-section {
+	background-color: var(--color-light-green);
+	padding: 20px;
+	border-radius: 10px;
+	margin-bottom: 20px;
+}
+
+.section-title {
+	color: var(--color-text-dark);
+	font-size: 1.5em;
+	margin-bottom: 15px;
+	border-bottom: 2px solid var(--color-primary);
+	padding-bottom: 10px;
+}
+
+.item-list {
+	background-color: var(--color-primary);
+	padding: 15px;
+	border-radius: 8px;
+	margin-bottom: 10px;
+}
+
+.item-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px 0;
+	border-bottom: 1px solid #eee;
+}
+
+.item-row:last-child {
+	border-bottom: none;
+}
+
+.total-row {
+	display: flex;
+	justify-content: space-between;
+	font-size: 1.3em;
+	font-weight: bold;
+	color: var(--color-text-dark);
+	padding: 15px 0;
+	border-top: 2px solid var(--color-primary);
+	margin-top: 15px;
+}
+
+.info-box {
+	background-color: var(--color-primary);
+	font-weight: bold;
+	padding: 15px;
+	border-radius: 8px;
+	margin-bottom: 10px;
+}
+
+.info-box p {
+	margin: 5px 0;
+	color: var(--color-text-dark);
+}
+
+.info-box strong {
+	color: var(--color-text-dark);
+}
+
+.btn-confirmar {
+	width: 100%;
+	padding: 15px;
+	background-color: var(--color-secondary);
+	color: var(--color-bg-light);
+	border: none;
+	border-radius: 5px;
+	font-size: 1.2em;
+	font-weight: bold;
+	cursor: pointer;
+	margin-top: 20px;
+	transition: background-color 0.3s;
+}
+
+.btn-confirmar:hover {
+	background-color: var(--color-weak-orange);
+}
+
+.btn-confirmar:disabled {
+	background-color: #ccc;
+	cursor: not-allowed;
+}
+
+.email-contact {
+	background-color: var(--color-primary);
+	color: var(--color-white);
+	padding: 15px;
+	border-radius: 8px;
+	margin-top: 15px;
+}
+
+.email-contact p {
+	margin: 5px 0;
+}
+
+.email-contact a {
+	color: var(--color-secondary);
+	text-decoration: none;
+	font-weight: bold;
+}
+
+.email-contact a:hover {
+	text-decoration: underline;
+}
