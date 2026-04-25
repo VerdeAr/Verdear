@@ -1,0 +1,127 @@
+@import "global.css";
+
+.background-container {
+	display: grid;
+	grid-template-areas:
+		"logo"
+		"erro"
+		"cadastro";
+	place-items: center;
+	background-color: var(--color-primary);
+}
+
+.cadastro-box {
+	grid-area: cadastro;
+	justify-content: center;
+	display: grid;
+	grid-template-columns: 900px;
+	padding: 40px;
+	border-radius: 20px;
+	box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+	text-align: center;
+	background-color: var(--color-bg-light);
+	margin-bottom: 25px;
+}
+
+.cadastro-form {
+	min-width: 100%;
+	display: grid;
+	grid-template-areas:
+		"title usuario"
+		"nome email"
+		"cpf senha"
+		"btn btn"
+		"link link";
+	gap: 15px;
+}
+
+.cadastro-title {
+	grid-area: title;
+	justify-self: stretch; /* ocupa toda a coluna */
+	text-align: left;
+	color: var(--color-bg-dark);
+	font-size: 2em;
+	font-weight: bold;
+}
+
+.input-group input,
+.input-group select {
+	width: 100%;
+	padding: 15px 20px;
+	border: 1px solid #ccc;
+	border-radius: 50px;
+	font-size: 1em;
+	box-sizing: border-box;
+	outline: none;
+	transition: border-color 0.3s;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+	border-color: var(--color-bg-dark);
+}
+
+.btn-cadastrar {
+	grid-area: btn;
+	width: 100%;
+	background-color: var(--color-secondary);
+	/* Laranja */
+	color: white;
+	padding: 15px 0;
+	border: none;
+	border-radius: 50px;
+	font-size: 1.1em;
+	font-weight: bold;
+	cursor: pointer;
+	margin-top: 10px;
+	transition: background-color 0.3s;
+}
+
+.btn-cadastrar:hover {
+	background-color: #e68a00;
+}
+
+.link-login {
+	grid-area: link;
+	display: block;
+	margin-top: 25px;
+	color: var(--color-text-light);
+	font-size: 1em;
+	text-decoration: none;
+	font-style: italic;
+	transition: color 0.3s;
+}
+
+.link-login:hover {
+	color: var(--color-bg-dark);
+}
+
+#nome {
+	grid-area: nome;
+}
+
+#CPF {
+	grid-area: cpf;
+}
+
+#email {
+	grid-area: email;
+}
+
+#pwd {
+	grid-area: senha;
+}
+
+#tipoUsuario {
+	grid-area: usuario;
+	align-self: center;
+}
+
+.error {
+	grid-area: erro;
+	color: red;
+	margin-bottom: 15px;
+	font-weight: bold;
+	text-align: left;
+	justify-self: center;
+}
