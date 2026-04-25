@@ -1,6 +1,5 @@
 @import "global.css";
 
-
 .background-container {
 	display: grid;
 	grid-template-areas:
@@ -35,7 +34,6 @@
 		"link link";
 	gap: 15px;
 }
-
 
 .cadastro-title {
 	grid-area: title;
