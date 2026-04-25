@@ -1,0 +1,22 @@
+#!/bin/sh
+set -e
+
+if [ "$3" != "1" ]; then
+    exit 0
+fi
+
+changed_files=$(git diff --name-only $1 $2)
+
+check_run() {
+    pattern=$1
+    cmd=$2
+    msg=$3
+
+    if echo "$changed_files" | grep -qE "$pattern"; then
+        echo "--- [Husky] $msg ---"
+        eval "$cmd"
+    fi
+}
+
+check_run "package\.json|bun\.lockb?" "bun install" "Nova branch possui dependências diferentes: Instalando..."
+check_run "prisma/schema\.prisma" "bunx --bun prisma generate" "Nova branch possui esquema diferente: Gerando Prisma Client..."
