@@ -78,7 +78,7 @@
 }
 
 .btn-cadastrar:hover {
-	background-color: #e68a00;
+	background-color: var(--color-secondary-hover);
 }
 
 .link-login {

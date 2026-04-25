@@ -157,7 +157,7 @@
 	transition: background-color 0.3s;
 }
 .btn-finalizar:hover {
-	background-color: var(--color-secondary);
+	background-color: var(--color-secondary-hover);
 }
 
 /* RESPONSIVIDADE BÁSICA */
