@@ -140,6 +140,7 @@
 	overflow: hidden;
 	color: var(--color-bg-light);
 	max-width: 30%;
+	
 }
 
 .product-card:hover {
@@ -181,6 +182,18 @@
 	justify-content: center;
 	color: var(--color-bg-light);
 	font-size: 1.2em;
+}
+
+.chat-seller-btn{
+	width: 100%;
+	padding: 10px;
+	margin: 10px 0;
+	background-color: var(--color-secondary);
+	color: var(--color-primary);
+	border: none;
+	border-radius: 5px;
+	font-size: 1.1em;
+	cursor: pointer;
 }
 
 .rating {
