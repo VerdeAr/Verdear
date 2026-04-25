@@ -1,6 +1,7 @@
 :root {
 	--color-primary: #fefaf6;
 	--color-secondary: #f39c12; /* Laranja do botão ENTRAR */
+	--color-secondary-hover: #e67e00; /* Laranja escuro para hover */
 	--color-bg-dark: #386641;
 	--color-bg-light: #ffffff; /* Cor de fundo da caixa de login */
 	--color-light-green: #d9ead3;
