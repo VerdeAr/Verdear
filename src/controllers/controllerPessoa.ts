@@ -24,7 +24,7 @@ export default {
 			where: { email },
 		});
 
-		if (!pessoa || !pessoa.senha) {
+		if (!pessoa?.senha) {
 			return res.render("login", { error: "E-mail ou senha inválidos" });
 		}
 

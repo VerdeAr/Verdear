@@ -1,6 +1,5 @@
 (() => {
 	const chatId = document.body.dataset.chatId;
-	const userId = Number(document.body.dataset.userId);
 	const messagesEl = document.getElementById("messages");
 	const form = document.getElementById("composer");
 	const input = document.getElementById("input-mensagem");
@@ -66,7 +65,7 @@
 		if (Notification.permission === "default") {
 			try {
 				await Notification.requestPermission();
-			} catch (e) {
+			} catch (_e) {
 				// ignorar
 			}
 		}
@@ -104,7 +103,7 @@
 			renderMensagem(data.mensagem);
 			ultimoId = Math.max(ultimoId, data.mensagem.id_mensagem);
 			scrollToBottom();
-		} catch (e) {
+		} catch (_e) {
 			alert("Falha de conexão ao enviar a mensagem");
 		} finally {
 			btnEnviar.disabled = false;
@@ -136,7 +135,7 @@
 
 				if (estavaNoFim) scrollToBottom();
 			}
-		} catch (e) {
+		} catch (_e) {
 			// ignorar erros transientes
 		}
 	}
@@ -175,7 +174,7 @@
 				} else {
 					alert(data.mensagem || "Erro ao finalizar");
 				}
-			} catch (e) {
+			} catch (_e) {
 				alert("Falha ao finalizar a conversa");
 			}
 		});

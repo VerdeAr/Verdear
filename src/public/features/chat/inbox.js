@@ -12,7 +12,7 @@
 			} else {
 				document.title = "Verdear | Conversas";
 			}
-		} catch (e) {
+		} catch (_e) {
 			// silencioso
 		}
 	}

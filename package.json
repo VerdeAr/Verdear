@@ -6,8 +6,8 @@
 	"main": "src/app.ts",
 	"scripts": {
 		"prepare": "husky",
-		"check": "tsc --noEmit && biome lint && biome check",
-		"format": "biome check --write",
+		"check": "tsc --noEmit && biome check --error-on-warnings",
+		"format": "biome check --write --unsafe",
 		"start": "tsc --noEmit && bun run src/app.ts",
 		"dev": "docker compose up banco -d && bunx bun prisma generate && bunx --bun prisma migrate dev && tsc --noEmit && bun --watch src/app.ts"
 	},

@@ -49,7 +49,7 @@
 					data.total,
 				);
 			}
-		} catch (e) {
+		} catch (_e) {
 			// silencioso
 		}
 	}
@@ -62,7 +62,7 @@
 			if (!resp.ok) return;
 			const data = await resp.json();
 			if (data.success) atualizarBadgeGenerico(badge, data.count);
-		} catch (e) {
+		} catch (_e) {
 			// silencioso
 		}
 	}
@@ -80,7 +80,7 @@
 				return;
 			}
 			window.location.href = data.redirect;
-		} catch (e) {
+		} catch (_e) {
 			alert("Falha de conexão ao iniciar a conversa");
 		}
 	}
