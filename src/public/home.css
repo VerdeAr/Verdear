@@ -132,13 +132,13 @@
 	flex-direction: column; /* Organiza os itens em coluna */
 	flex: 0 0 25%;
 	padding: 15px;
-	background-color: var(--color-light-green);
+	background-color: var(--color-bg-dark);
 	border-radius: 15px;
 	text-align: center;
 	cursor: pointer;
 	position: relative;
 	overflow: hidden;
-	color: var(--color-bg-dark);
+	color: var(--color-bg-light);
 	max-width: 30%;
 }
 
