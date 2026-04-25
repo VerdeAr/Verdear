@@ -1,0 +1,345 @@
+@import "global.css";
+
+/* --- 2. LAYOUT PRINCIPAL (Minha Conta) --- */
+.main-content {
+	display: grid;
+	grid-template-columns: 300px 700px;
+	grid-template-rows: 700px;
+	max-width: 1200px;
+	margin: 30px auto;
+	background-color: var(--color-bg-light);
+	border-radius: 15px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	overflow: hidden;
+}
+
+.sidebar {
+	display: grid;
+	padding: 30px 20px;
+	background-color: var(--color-bg-light);
+	border-right: 1px solid var(--color-gray);
+	border-radius: 15px 0 0 15px;
+	overflow-y: auto;
+}
+
+.user-info {
+	text-align: center;
+	padding-bottom: 20px;
+	border-bottom: 1px solid var(--color-gray);
+	margin-bottom: 20px;
+}
+
+.profile-picture {
+	width: 80px;
+	height: 80px;
+	border-radius: 50%;
+	background-color: var(--color-secondary);
+	margin: 0 auto 10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 3em;
+	color: var(--color-primary);
+}
+
+.user-info h3 {
+	margin: 5px 0 2px;
+	color: var(--color-text-dark);
+}
+
+.user-info p {
+	margin: 0;
+	font-size: 0.9em;
+	color: #7f8c8d;
+}
+
+.user-info .role {
+	font-weight: bold;
+	color: var(--color-secondary);
+}
+
+.edit-icon {
+	position: relative;
+	top: -75px;
+	left: 35px;
+	color: var(--color-primary);
+	cursor: pointer;
+}
+
+.config-menu {
+	list-style: none;
+	padding: 0;
+}
+
+.config-menu li a {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 15px 10px;
+	margin-bottom: 5px;
+	text-decoration: none;
+	color: var(--color-text-dark);
+	border-radius: 8px;
+	transition: background-color 0.3s;
+	cursor: pointer;
+	/* Adicionado para indicar o clique */
+}
+
+/* Classe .active agora é manipulada pelo JS */
+.config-menu li a:hover,
+.config-menu li a.active {
+	background-color: var(--color-secondary);
+	color: var(--color-primary);
+}
+
+.config-menu i {
+	margin-right: 15px;
+	width: 20px;
+	text-align: center;
+	color: var(--color-secondary);
+}
+
+.config-menu li a:hover i {
+	color: var(--color-primary);
+}
+
+/* Ícone de seta na direita */
+.config-menu .fa-chevron-right {
+	color: #ccc;
+	font-size: 0.8em;
+}
+
+/* --- 3. CONTEÚDO PRINCIPAL --- */
+.main-area {
+	height: 100%;
+	padding: 30px;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+}
+
+.main-area h2 {
+	color: var(--color-secondary);
+	font-size: 1.8em;
+	border-bottom: 2px solid var(--color-secondary);
+	padding-bottom: 10px;
+	margin-bottom: 30px;
+}
+
+/* --- 6. ESTILOS DE ABAS E FORMULÁRIOS --- */
+.content-tab {
+	display: none;
+	/* Esconde todas as abas por padrão */
+	padding: 20px 0;
+}
+
+.content-tab.active {
+	padding: 15px;
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	min-height: 0;
+	overflow: hidden;
+
+	/* Mostra apenas a aba ativa */
+}
+
+#historico-compras {
+	flex: 1;
+	min-height: 0;
+	overflow-y: auto;
+}
+
+#controle-pedidos {
+	flex: 1;
+	min-height: 0;
+	overflow-y: auto;
+}
+
+/* Estilos de formulário geral */
+.update-form label,
+.password-form label,
+.form-cadastro-produto label {
+	display: block;
+	margin-top: 15px;
+	margin-bottom: 5px;
+	font-weight: bold;
+	color: var(--color-text-dark);
+}
+
+.update-form input,
+.password-form input,
+.form-cadastro-produto input {
+	width: 100%;
+	max-width: 400px;
+	/* Limita a largura dos campos */
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	box-sizing: border-box;
+}
+
+.update-form button,
+.password-form button,
+.form-cadastro-produto button {
+	margin-top: 20px;
+}
+
+/* --- ESTILOS PADRÃO DO BOTÃO (MANTIDOS) --- */
+.btn-cadastrar {
+	background-color: var(--color-secondary);
+	color: var(--color-bg-light);
+	padding: 10px 20px;
+	border: none;
+	border-radius: 5px;
+	font-weight: bold;
+	cursor: pointer;
+	text-transform: uppercase;
+	transition: opacity 0.3s;
+}
+
+.btn-cadastrar:hover {
+	opacity: 0.9;
+}
+
+/* --- NOVOS ESTILOS PARA MENSAGEM DE SUCESSO (TOAST) --- */
+#status-message {
+	position: fixed;
+	top: 20px;
+	right: 20px;
+	/* Usando um verde de sucesso mais claro que o primary, ou primary mesmo */
+	background-color: var(--color-primary);
+	color: var(--color-white);
+	padding: 15px 25px;
+	border-radius: 8px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+	z-index: 1000;
+	opacity: 0;
+	/* Começa invisível */
+	visibility: hidden;
+	/* Garante que não interfira no clique */
+	transition:
+		opacity 0.5s ease,
+		visibility 0.5s;
+}
+
+#status-message p {
+	margin: 0;
+	font-weight: bold;
+	display: flex;
+	align-items: center;
+}
+
+#status-message i {
+	margin-right: 10px;
+	font-size: 1.2em;
+}
+
+.show-message {
+	opacity: 1 !important;
+	visibility: visible !important;
+}
+
+/* --- AÇÕES DA CONTA (Logout + Excluir Conta) --- */
+.account-actions {
+	padding-top: 20px;
+	border-top: 1px solid #ffffff;
+	color: var(--color-text-dark);
+}
+
+.logout-form {
+	margin-bottom: 15px;
+}
+
+/* Botão de Logout — padrão Verdear */
+.btn-logout {
+	background-color: var(--color-secondary);
+	color: var(--color-primary);
+	padding: 10px 20px;
+	width: 100%;
+	max-width: 300px;
+	border: none;
+	border-radius: 5px;
+	font-weight: bold;
+	cursor: pointer;
+	text-transform: uppercase;
+	transition: opacity 0.3s;
+}
+
+.btn-logout:hover {
+	opacity: 0.9;
+}
+
+/* Estilos para Avaliação */
+.avaliacao-section {
+	margin-top: 15px;
+	padding: 15px;
+	background-color: var(--color-white);
+	border-radius: 8px;
+	border: 1px solid var(--color-primary);
+}
+
+.avaliacao-form {
+	display: none;
+}
+
+.avaliacao-form.active {
+	display: block;
+}
+
+.rating-stars {
+	display: flex;
+	gap: 5px;
+	margin: 10px 0;
+	font-size: 1.5em;
+}
+
+.rating-stars .star {
+	cursor: pointer;
+	color: #ddd;
+	transition: color 0.2s;
+}
+
+.rating-stars .star:hover,
+.rating-stars .star.active {
+	color: gold;
+}
+
+.avaliacao-comentario {
+	width: 100%;
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	margin-top: 10px;
+	min-height: 80px;
+	font-family: Arial, sans-serif;
+	box-sizing: border-box;
+}
+
+.btn-avaliar {
+	background-color: var(--color-secondary);
+	color: var(--color-white);
+	padding: 10px 20px;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	font-weight: bold;
+	margin-top: 10px;
+}
+
+.btn-avaliar:hover {
+	background-color: var(--color-primary);
+}
+
+.avaliacao-existente {
+	background-color: var(--color-light-green);
+	padding: 10px;
+	border-radius: 5px;
+	margin-top: 10px;
+}
+
+.avaliacao-existente .stars-display {
+	color: gold;
+	font-size: 1.2em;
+}
