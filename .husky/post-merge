@@ -1,0 +1,18 @@
+#!/bin/sh
+set -e
+
+changed_files=$(git diff --name-only ORIG_HEAD HEAD)
+
+check_run() {
+    pattern=$1
+    cmd=$2
+    msg=$3
+
+    if echo "$changed_files" | grep -qE "$pattern"; then
+        echo "--- [Husky] $msg ---"
+        eval "$cmd"
+    fi
+}
+
+check_run "package\.json|bun\.lockb?" "bun install" "Alteração de dependências: Instalando..."
+check_run "prisma/schema\.prisma" "bunx --bun prisma generate" "Alteração no Schema: Gerando Prisma Client..."

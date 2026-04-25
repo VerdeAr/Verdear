@@ -237,8 +237,8 @@
 }
 
 .show-message {
-	opacity: 1 !important;
-	visibility: visible !important;
+	opacity: 1;
+	visibility: visible;
 }
 
 /* --- AÇÕES DA CONTA (Logout + Excluir Conta) --- */
