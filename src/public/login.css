@@ -1,0 +1,72 @@
+@import "global.css";
+
+.background-container {
+	display: grid;
+	grid-template-columns: 900px;
+}
+.loginText {
+	color: var(--color-bg-dark);
+	font-size: 2em;
+	font-weight: bold;
+	margin-bottom: 30px;
+	text-align: left;
+}
+
+.login-box {
+	padding: 40px;
+	border-radius: 20px;
+	box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+	text-align: center;
+	background-color: var(--color-bg-light);
+}
+
+.input-group {
+	margin-bottom: 20px;
+}
+
+.input-group input {
+	width: 100%;
+	padding: 15px 20px;
+	border: 1px solid #ccc;
+	border-radius: 50px;
+	font-size: 1em;
+	box-sizing: border-box;
+	outline: none;
+	transition: border-color 0.3s;
+}
+
+.input-group input:focus {
+	border-color: var(--color-bg-dark);
+}
+
+.btn-entrar {
+	width: 100%;
+	background-color: var(--color-secondary); /* Laranja */
+	color: white;
+	padding: 15px 0;
+	border: none;
+	border-radius: 50px;
+	font-size: 1.1em;
+	font-weight: bold;
+	cursor: pointer;
+	margin-top: 10px;
+	transition: background-color 0.3s;
+}
+
+.btn-entrar:hover {
+	background-color: #e68a00;
+}
+
+.link-cadastrar {
+	display: block;
+	margin-top: 25px;
+	color: var(--color-text-light);
+	font-size: 1em;
+	text-decoration: none;
+	font-style: italic;
+	transition: color 0.3s;
+}
+
+.link-cadastrar:hover {
+	color: var(--color-bg-dark);
+}
