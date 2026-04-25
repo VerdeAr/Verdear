@@ -3,9 +3,102 @@
 	--color-secondary: #f39c12; /* Laranja do botão ENTRAR */
 	--color-bg-dark: #386641;
 	--color-bg-light: #ffffff; /* Cor de fundo da caixa de login */
-	--color-light-green: #80cfa9;
+	--color-light-green: #79AE6F;
 	--color-text-dark: #131112;
+	--color-red: #ff0800;
+	--color-gray: #808080;
+	--color-weak-orange: #ffbf69;
 }
 body {
 	margin: 0;
+	font-family: Arial, Helvetica, sans-serif;
 }
+.initial-main-box { /*Box principal do login e cadastro*/
+	min-height: 100dvh;
+	display: grid;
+	place-items: center;
+	align-content: start;
+	background-color: var(--color-primary);
+}
+
+.initial-logo { /*Logo do login e cadastro*/
+	max-width: 400px;
+	height: auto;
+	position: relative;
+	margin: 100px;
+}
+
+.main-box { /*Box principal do restante das páginas*/
+	min-height: 100dvh;
+	display: grid;
+	place-items: start center;
+	background-color: var(--color-primary);
+	overflow: hidden;
+}
+
+.main-header { /*Cabeçalhos*/
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 15px 5%;
+	border-bottom: 1px solid #eee;
+	box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.header-left {
+	display: flex;
+	align-items: center;
+	margin-left: 100px;
+}
+.header-left img {
+	max-width: 250px;
+}
+.search-bar {
+	flex-grow: 1;
+	position: relative;
+	max-width: 850px;
+	height: 70px;
+	background-color: var(--color-bg-dark);
+	border-radius: 50px;
+	display: flex;
+	align-items: center;
+	padding: 0 20px;
+}
+.search-bar input {
+	background: none;
+	border: none;
+	color: var(--color-bg-light);
+	font-size: 1em;
+	width: 100%;
+	outline: none;
+}
+.search-bar i {
+	color: var(--color-bg-light);
+	margin-right: 10px;
+}
+
+.header-icons {
+	display: flex;
+	align-items: center;
+	margin-right: 100px;
+}
+.header-icons .icon-btn {
+	background: none;
+	border: 2px solid var(--color-secondary);
+	border-radius: 50%;
+	width: 60px;
+	height: 60px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-left: 15px;
+	cursor: pointer;
+	color: var(--color-secondary);
+	font-size: 1.2em;
+}
+.header-icons .icon-btn.user {
+	border-color: var(--color-secondary);
+	color: var(--color-secondary);
+}
+
