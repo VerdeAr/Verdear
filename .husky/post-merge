@@ -1,0 +1,5 @@
+#!/bin/sh
+
+bun install
+
+bunx --bun prisma generate
