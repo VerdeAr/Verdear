@@ -31,7 +31,7 @@ Para informações detalhadas sobre a configuração do ambiente, execução loc
 
 ## Equipe
 
-### Integrantes - Primeiro Ciclo
+## Integrantes no primeiro ciclo
 - Ana Girelli
 - Bruno Teles
 - João Rickli

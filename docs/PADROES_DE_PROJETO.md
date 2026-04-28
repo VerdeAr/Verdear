@@ -11,6 +11,7 @@ Nossa base de código está dividida em três grandes áreas:
 2. **`src/`**: O coração do backend (Controllers, Rotas, Views e Client do Prisma). Nunca exposto à internet.
 3. **`public/`**: Assets estáticos (CSS, JS do cliente, Imagens). Exposto à internet.
 
+
 ### Árvore de Diretórios
 ```text
 raiz_do_projeto/
