@@ -1,5 +1,3 @@
-@import "global.css";
-
 .checkout-container {
 	display: grid;
 	grid-template-rows: auto auto auto auto;

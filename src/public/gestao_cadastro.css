@@ -1,6 +1,3 @@
-@import "global.css";
-
-/* --- 2. LAYOUT PRINCIPAL (Minha Conta) --- */
 .main-content {
 	display: grid;
 	grid-template-columns: 300px 700px;
