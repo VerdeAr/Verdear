@@ -1,5 +1,3 @@
-@import "global.css";
-
 .background-container {
 	display: grid;
 	grid-template-columns: 900px;
