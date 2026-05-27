@@ -2,12 +2,38 @@ import type { Produto, Venda, VendaProduto } from "@prisma/client";
 import { tipo_entrega_enum } from "@prisma/client";
 import type { Request, Response } from "express";
 import prisma from "../core/database";
+import { ErroValidacao } from "../core/errors/erros";
+
+interface ItemCarrinho {
+	id_produto: number;
+	nome?: string | null;
+	quantidade: number;
+	preco: number;
+	imagem?: string | null;
+}
+
+const STATUS_VENDA_VALIDOS = ["ABERTA", "FINALIZADA", "CANCELADA"] as const;
+
+async function vendedorTemProdutoNaVenda(
+	idVenda: number,
+	userId: number,
+): Promise<boolean> {
+	const itensVenda = await prisma.vendaProduto.findMany({
+		where: { id_venda: idVenda },
+		include: { produto: true },
+	});
+
+	return itensVenda.some(
+		(item: VendaProduto & { produto: Produto | null }) =>
+			item.produto?.id_vendedor === userId,
+	);
+}
 
 const getCheckoutData = async (req: Request) => {
-	const itens = req.session.carrinho || [];
+	const itens: ItemCarrinho[] = req.session.carrinho || [];
 
 	const subtotal = itens.reduce(
-		(sum: number, item: Produto & { quantidade: number }) =>
+		(sum: number, item: ItemCarrinho) =>
 			sum + Number(item.preco || 0) * Number(item.quantidade || 1),
 		0,
 	);
@@ -78,27 +104,82 @@ export default {
 				.json({ success: false, message: "Usuário não autenticado." });
 		}
 
-		const novaVenda = await prisma.venda.create({
-			data: {
-				id_cliente: Number(req.session.userId),
-				data_venda: new Date(),
-				tipo_entrega: tipoEntrega,
-				valor_total: total,
-				status: "ABERTA",
-			},
+		const idsProdutos = itens.map((item) => Number(item.id_produto));
+		const produtos = await prisma.produto.findMany({
+			where: { id_produto: { in: idsProdutos }, ativo: true },
 		});
 
-		const itensVendaData = itens.map(
-			(item: Produto & { quantidade: number }) => ({
-				id_venda: novaVenda.id_venda,
-				id_produto: Number(item.id_produto),
-				quantidade: Number(item.quantidade),
-				preco_unitario: Number(item.preco),
-			}),
+		const produtosPorId = new Map(
+			produtos.map((produto) => [produto.id_produto, produto]),
 		);
 
-		await prisma.vendaProduto.createMany({
-			data: itensVendaData,
+		for (const item of itens) {
+			const produto = produtosPorId.get(Number(item.id_produto));
+
+			if (!produto) {
+				return res.status(400).json({
+					success: false,
+					message: "Um ou mais produtos do carrinho não estão disponíveis.",
+				});
+			}
+
+			const quantidade = Number(item.quantidade);
+			const estoque = Number(produto.estoque ?? 0);
+
+			if (quantidade > estoque) {
+				return res.status(400).json({
+					success: false,
+					message: `Estoque insuficiente para "${produto.nome_produto}". Disponível: ${estoque}.`,
+				});
+			}
+		}
+
+		const novaVenda = await prisma.$transaction(async (tx) => {
+			for (const item of itens) {
+				const produto = produtosPorId.get(Number(item.id_produto));
+				if (!produto) {
+					throw new ErroValidacao(
+						"Um ou mais produtos do carrinho não estão disponíveis.",
+					);
+				}
+
+				const quantidade = Number(item.quantidade);
+				const estoqueAtual = Number(produto.estoque ?? 0);
+
+				if (quantidade > estoqueAtual) {
+					throw new ErroValidacao(
+						`Estoque insuficiente para "${produto.nome_produto}". Disponível: ${estoqueAtual}.`,
+					);
+				}
+			}
+
+			const venda = await tx.venda.create({
+				data: {
+					id_cliente: Number(req.session.userId),
+					data_venda: new Date(),
+					tipo_entrega: tipoEntrega,
+					valor_total: total,
+					status: "ABERTA",
+				},
+			});
+
+			await tx.vendaProduto.createMany({
+				data: itens.map((item) => ({
+					id_venda: venda.id_venda,
+					id_produto: Number(item.id_produto),
+					quantidade: Number(item.quantidade),
+					preco_unitario: Number(item.preco),
+				})),
+			});
+
+			for (const item of itens) {
+				await tx.produto.update({
+					where: { id_produto: Number(item.id_produto) },
+					data: { estoque: { decrement: Number(item.quantidade) } },
+				});
+			}
+
+			return venda;
 		});
 
 		req.session.carrinho = [];
@@ -112,37 +193,60 @@ export default {
 		});
 	},
 
-	async getVenda(_: Request, res: Response) {
-		const vendas = await prisma.venda.findMany();
-		return res.status(200).json(vendas);
-	},
-
-	async postVenda(req: Request, res: Response) {
-		const novaVenda = await prisma.venda.create({
-			data: req.body,
-		});
-		return res.status(201).json(novaVenda);
-	},
-
 	async putVenda(req: Request, res: Response) {
-		const { id } = req.params;
+		const idVenda = Number(req.params.id);
+		const userId = Number(req.session.userId);
+		const userRole = req.session.userRole;
 
-		const vendaExiste = await prisma.venda.findUnique({
-			where: { id_venda: Number(id) },
+		if (!userId) {
+			return res
+				.status(401)
+				.json({ success: false, message: "Usuário não autenticado." });
+		}
+
+		if (userRole !== "VENDEDOR") {
+			return res.status(403).json({
+				success: false,
+				message: "Apenas vendedores podem atualizar pedidos.",
+			});
+		}
+
+		const venda = await prisma.venda.findUnique({
+			where: { id_venda: idVenda },
 		});
 
-		if (!vendaExiste) {
-			return res
-				.status(404)
-				.json({ error: "Venda não encontrada para atualização" });
+		if (!venda) {
+			return res.status(404).json({
+				success: false,
+				message: "Venda não encontrada para atualização.",
+			});
+		}
+
+		const temPermissao = await vendedorTemProdutoNaVenda(idVenda, userId);
+		if (!temPermissao) {
+			return res.status(403).json({
+				success: false,
+				message: "Você não tem permissão para atualizar este pedido.",
+			});
+		}
+
+		const { status } = req.body;
+		if (!status || !STATUS_VENDA_VALIDOS.includes(status)) {
+			return res.status(400).json({
+				success: false,
+				message: "Status inválido. Use ABERTA, FINALIZADA ou CANCELADA.",
+			});
 		}
 
 		const vendaAtualizada = await prisma.venda.update({
-			where: { id_venda: Number(id) },
-			data: req.body,
+			where: { id_venda: idVenda },
+			data: { status },
 		});
 
-		return res.status(200).json(vendaAtualizada);
+		return res.status(200).json({
+			success: true,
+			...vendaAtualizada,
+		});
 	},
 
 	async deleteVenda(req: Request, res: Response) {

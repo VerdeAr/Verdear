@@ -12,7 +12,7 @@ import route from "./routes/route.ts";
 
 //Instanciar o aplicativo express
 const app = express();
-const port = 3000;
+const port = Number(process.env.PORT) || 3000;
 
 //Uso de seções de usuário
 app.use(
