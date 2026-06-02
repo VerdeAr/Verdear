@@ -553,8 +553,14 @@
 
             const icon = isSuccess ? 'fas fa-check-circle' : 'fas fa-exclamation-triangle';
             const bgColor = isSuccess ? 'var(--color-primary)' : '#c0392b';
+            const header = document.querySelector('.main-header');
+            const headerBottom = header ? header.getBoundingClientRect().bottom : 0;
+            const toastTop = Math.round(headerBottom + 12);
 
-            $status.css('background-color', bgColor);
+            $status.css({
+                'background-color': bgColor,
+                top: `${toastTop}px`,
+            });
             $status.find('p').html('<i class="' + icon + '"></i> ' + message);
 
             $status.addClass('show-message');
@@ -595,8 +601,12 @@
 
             // Função para atualizar nome + email
             $('.update-form').on('submit', function (e) {
-                e.preventDefault();
                 const form = $(this);
+                if (form.attr('action') !== '/pessoa/cadastro') {
+                    return;
+                }
+
+                e.preventDefault();
 
                 $.ajax({
                     type: 'PUT',
