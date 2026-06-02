@@ -1,8 +1,8 @@
 import { defineConfig } from "prisma/config";
 
-const { DB_HOST, DB_PORT, DB_PASS, DB_USER, DB_DATABASE } = process.env;
+const dbUrl = `postgresql://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_DATABASE}?schema=public`;
 
-const dbUrl = `postgresql://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_DATABASE}?schema=public`;
+console.log("Connecting to:", dbUrl); // remova depois de testar
 
 export default defineConfig({
 	schema: "prisma/schema.prisma",

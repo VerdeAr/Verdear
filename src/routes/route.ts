@@ -1,7 +1,6 @@
 import type { Request, Response } from "express";
 import express from "express";
 import controllerAvaliacao from "../controllers/controllerAvaliacao.ts";
-import controllerCarrinho from "../controllers/controllerCarrinho.ts";
 import controllerHome from "../controllers/controllerHome.ts";
 import controllerPessoa from "../controllers/controllerPessoa.ts";
 import controllerProduto from "../controllers/controllerProduto.ts";
@@ -53,29 +52,6 @@ route.get(
 );
 
 route.get("/produtos/busca", isAuthenticated, controllerHome.searchProducts);
-
-route.get("/carrinho", isAuthenticated, controllerCarrinho.viewCarrinho);
-route.post("/carrinho/add", isAuthenticated, controllerCarrinho.addItem);
-route.delete(
-	"/carrinho/remove/:id",
-	isAuthenticated,
-	controllerCarrinho.removeItem,
-);
-route.put(
-	"/carrinho/update/:id",
-	isAuthenticated,
-	controllerCarrinho.updateQtd,
-);
-route.post(
-	"/carrinho/entrega",
-	isAuthenticated,
-	controllerCarrinho.saveEntrega,
-);
-route.post(
-	"/carrinho/pagamento",
-	isAuthenticated,
-	controllerCarrinho.savePagamento,
-);
 
 route.put("/pessoa/cadastro", isAuthenticated, controllerPessoa.putCadastro);
 route.put("/pessoa/senha", isAuthenticated, controllerPessoa.putSenha);

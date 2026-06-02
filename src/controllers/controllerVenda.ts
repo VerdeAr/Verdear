@@ -4,42 +4,46 @@ import type { Request, Response } from "express";
 import prisma from "../core/database";
 
 const getCheckoutData = async (req: Request) => {
-	const itens = req.session.carrinho || [];
+	const id_pessoa = req.session.userId as number;
+
+	const carrinho = await prisma.carrinho.findUnique({
+		where: { id_pessoa },
+		include: { itens: { include: { produto: true } } },
+	});
+
+	const itens = (carrinho?.itens ?? []).map((item) => ({
+		id_item: item.id_item,
+		id_produto: item.id_produto,
+		nome: item.produto.nome_produto,
+		quantidade: Number(item.quantidade),
+		preco: Number(item.preco),
+	}));
 
 	const subtotal = itens.reduce(
-		(sum: number, item: Produto & { quantidade: number }) =>
-			sum + Number(item.preco || 0) * Number(item.quantidade || 1),
+		(sum, item) => sum + item.preco * item.quantidade,
 		0,
 	);
 
-	let tipoEntrega: tipo_entrega_enum;
-	if (req.session.tipoEntrega === "ENTREGA") {
-		tipoEntrega = tipo_entrega_enum.ENTREGA;
-	} else {
-		tipoEntrega = tipo_entrega_enum.RETIRADA;
-	}
+	const tipoEntrega =
+		carrinho?.tipo_entrega === "ENTREGA"
+			? tipo_entrega_enum.ENTREGA
+			: tipo_entrega_enum.RETIRADA;
 
-	const formaPagamento = req.session.formaPagamento || "CARTÃO";
 	const custoFrete = tipoEntrega === "ENTREGA" ? 15.0 : 0.0;
 	const total = subtotal + custoFrete;
 
 	const vendedoresEmails = new Set<string>();
-
 	for (const item of itens) {
 		const produto = await prisma.produto.findUnique({
-			where: { id_produto: Number(item.id_produto) },
+			where: { id_produto: item.id_produto },
 			select: { id_vendedor: true },
 		});
-
 		if (produto?.id_vendedor) {
 			const vendedor = await prisma.pessoa.findUnique({
 				where: { id_pessoa: produto.id_vendedor },
 				select: { email: true },
 			});
-
-			if (vendedor?.email) {
-				vendedoresEmails.add(vendedor.email);
-			}
+			if (vendedor?.email) vendedoresEmails.add(vendedor.email);
 		}
 	}
 
@@ -49,13 +53,21 @@ const getCheckoutData = async (req: Request) => {
 		custoFrete,
 		total,
 		tipoEntrega,
-		formaPagamento,
+		formaPagamento: carrinho?.forma_pagamento ?? null,
 		vendedoresEmails: Array.from(vendedoresEmails),
 	};
 };
+
 export default {
 	async viewCheckout(req: Request, res: Response) {
-		if (!req.session.carrinho || req.session.carrinho.length === 0) {
+		const id_pessoa = req.session.userId as number;
+
+		const carrinho = await prisma.carrinho.findUnique({
+			where: { id_pessoa },
+			include: { itens: true },
+		});
+
+		if (!carrinho || carrinho.itens.length === 0) {
 			return res.redirect("/carrinho");
 		}
 
@@ -65,6 +77,7 @@ export default {
 
 	async confirmarVenda(req: Request, res: Response) {
 		const { itens, total, tipoEntrega } = await getCheckoutData(req);
+		const id_pessoa = req.session.userId as number;
 
 		if (!itens || itens.length === 0) {
 			return res
@@ -72,15 +85,9 @@ export default {
 				.json({ success: false, message: "Carrinho vazio." });
 		}
 
-		if (!req.session.userId) {
-			return res
-				.status(401)
-				.json({ success: false, message: "Usuário não autenticado." });
-		}
-
 		const novaVenda = await prisma.venda.create({
 			data: {
-				id_cliente: Number(req.session.userId),
+				id_cliente: id_pessoa,
 				data_venda: new Date(),
 				tipo_entrega: tipoEntrega,
 				valor_total: total,
@@ -88,22 +95,21 @@ export default {
 			},
 		});
 
-		const itensVendaData = itens.map(
-			(item: Produto & { quantidade: number }) => ({
-				id_venda: novaVenda.id_venda,
-				id_produto: Number(item.id_produto),
-				quantidade: Number(item.quantidade),
-				preco_unitario: Number(item.preco),
-			}),
-		);
-
 		await prisma.vendaProduto.createMany({
-			data: itensVendaData,
+			data: itens.map((item) => ({
+				id_venda: novaVenda.id_venda,
+				id_produto: item.id_produto,
+				quantidade: item.quantidade,
+				preco_unitario: item.preco,
+			})),
 		});
 
-		req.session.carrinho = [];
-		req.session.tipoEntrega = undefined;
-		req.session.formaPagamento = undefined;
+		const carrinho = await prisma.carrinho.findUnique({ where: { id_pessoa } });
+		if (carrinho) {
+			await prisma.itemCarrinho.deleteMany({
+				where: { id_carrinho: carrinho.id_carrinho },
+			});
+		}
 
 		return res.json({
 			success: true,
@@ -295,6 +301,7 @@ export default {
 			where: { id_vendedor: userId },
 			select: { id_produto: true },
 		});
+
 		const idsProdutos = produtosVendedor.map(
 			(p: { id_produto: number }) => p.id_produto,
 		);
@@ -307,6 +314,7 @@ export default {
 			where: { id_produto: { in: idsProdutos } },
 			select: { id_venda: true },
 		});
+
 		const idsVendas = [
 			...new Set(
 				itensVenda

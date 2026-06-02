@@ -6,6 +6,7 @@ import express, {
 } from "express";
 import session from "express-session";
 import prisma from "./core/database.ts";
+import carrinhoRoutes from "./features/carrinho/carrinho.routes.ts";
 import chatRoutes from "./features/chat/chat.routes.ts";
 import { errorHandler } from "./middlewares/errorMiddleware.ts";
 import route from "./routes/route.ts";
@@ -64,6 +65,7 @@ app.use(async (req: Request, res: Response, next: NextFunction) => {
 });
 
 app.use("/chat", chatRoutes);
+app.use("/", carrinhoRoutes);
 app.use("/", route); //Usa as rotas do MVC (as definidas em mvc/routes/route.js)
 
 app.use(errorHandler);
