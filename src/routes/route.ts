@@ -78,7 +78,7 @@ route.put(
 
 route.get("/finalizar-venda", isAuthenticated, controllerVenda.viewCheckout);
 route.post("/finalizar-venda", isAuthenticated, controllerVenda.confirmarVenda);
-route.put("/venda/:id", controllerVenda.putVenda);
+route.put("/venda/:id", isAuthenticated, controllerVenda.putVenda);
 route.delete("/venda/:id", isAuthenticated, controllerVenda.deleteVenda);
 route.get(
 	"/vendedor/pedidos",
