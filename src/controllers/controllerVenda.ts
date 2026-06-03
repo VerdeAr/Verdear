@@ -4,14 +4,6 @@ import type { Request, Response } from "express";
 import prisma from "../core/database";
 import { ErroValidacao } from "../core/errors/erros";
 
-interface ItemCarrinho {
-	id_produto: number;
-	nome?: string | null;
-	quantidade: number;
-	preco: number;
-	imagem?: string | null;
-}
-
 const STATUS_VENDA_VALIDOS = ["ABERTA", "FINALIZADA", "CANCELADA"] as const;
 
 async function vendedorTemProdutoNaVenda(
