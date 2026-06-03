@@ -1,11 +1,11 @@
 import type { Request, Response } from "express";
 import express from "express";
 import controllerAvaliacao from "../controllers/controllerAvaliacao.ts";
-import controllerCarrinho from "../controllers/controllerCarrinho.ts";
 import controllerHome from "../controllers/controllerHome.ts";
 import controllerPessoa from "../controllers/controllerPessoa.ts";
 import controllerProduto from "../controllers/controllerProduto.ts";
 import controllerVenda from "../controllers/controllerVenda.ts";
+import carrinhoRoutes from "../features/carrinho/carrinho.routes.ts";
 import isAuthenticated from "../middlewares/authMiddleware.ts";
 import { errorHandler } from "../middlewares/errorMiddleware.ts";
 
@@ -54,29 +54,6 @@ route.get(
 
 route.get("/produtos/busca", isAuthenticated, controllerHome.searchProducts);
 
-route.get("/carrinho", isAuthenticated, controllerCarrinho.viewCarrinho);
-route.post("/carrinho/add", isAuthenticated, controllerCarrinho.addItem);
-route.delete(
-	"/carrinho/remove/:id",
-	isAuthenticated,
-	controllerCarrinho.removeItem,
-);
-route.put(
-	"/carrinho/update/:id",
-	isAuthenticated,
-	controllerCarrinho.updateQtd,
-);
-route.post(
-	"/carrinho/entrega",
-	isAuthenticated,
-	controllerCarrinho.saveEntrega,
-);
-route.post(
-	"/carrinho/pagamento",
-	isAuthenticated,
-	controllerCarrinho.savePagamento,
-);
-
 route.put("/pessoa/cadastro", isAuthenticated, controllerPessoa.putCadastro);
 route.put("/pessoa/senha", isAuthenticated, controllerPessoa.putSenha);
 route.put("/pessoa/frete", isAuthenticated, controllerPessoa.putFrete);
@@ -113,6 +90,8 @@ route.get(
 	isAuthenticated,
 	controllerVenda.getPedidosVendedorPendentesCount,
 );
+
+route.use("/", carrinhoRoutes);
 
 route.use(errorHandler);
 
