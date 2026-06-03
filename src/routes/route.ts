@@ -5,6 +5,7 @@ import controllerHome from "../controllers/controllerHome.ts";
 import controllerPessoa from "../controllers/controllerPessoa.ts";
 import controllerProduto from "../controllers/controllerProduto.ts";
 import controllerVenda from "../controllers/controllerVenda.ts";
+import carrinhoRoutes from "../features/carrinho/carrinho.routes.ts";
 import isAuthenticated from "../middlewares/authMiddleware.ts";
 import { errorHandler } from "../middlewares/errorMiddleware.ts";
 
@@ -89,6 +90,8 @@ route.get(
 	isAuthenticated,
 	controllerVenda.getPedidosVendedorPendentesCount,
 );
+
+route.use("/", carrinhoRoutes);
 
 route.use(errorHandler);
 
