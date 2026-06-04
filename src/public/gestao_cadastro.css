@@ -211,7 +211,8 @@
 	padding: 15px 25px;
 	border-radius: 8px;
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-	z-index: 1000;
+	z-index: 99999;
+	pointer-events: none;
 	opacity: 0;
 	/* Começa invisível */
 	visibility: hidden;
@@ -233,7 +234,7 @@
 	font-size: 1.2em;
 }
 
-.show-message {
+#status-message.show-message {
 	opacity: 1;
 	visibility: visible;
 }

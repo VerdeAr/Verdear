@@ -28,6 +28,7 @@ model Pessoa {
   produtos                      Produto[]
   vendas                        Venda[]
   vendedor                      vendedor?
+  carrinho                      Carrinho?
 
   @@index([id_bairro], map: "idx_pessoa_bairro")
   @@map("pessoa")
@@ -64,6 +65,7 @@ model Produto {
   unidadeMedida     UnidadeMedida? @relation(fields: [id_unidade_medida], references: [id_unidade_medida], onDelete: NoAction, onUpdate: NoAction)
   vendedor          Pessoa?        @relation(fields: [id_vendedor], references: [id_pessoa], onDelete: NoAction, onUpdate: NoAction)
   vendaProdutos     VendaProduto[]
+  itensCarrinho     ItemCarrinho[]
 
   @@index([id_categoria], map: "idx_produto_categoria")
   @@index([id_unidade_medida], map: "idx_produto_unidade")
@@ -187,6 +189,31 @@ model vendedor {
   cnpj         String? @db.VarChar(14)
   nome_fazenda String? @db.VarChar(100)
   pessoa       Pessoa? @relation(fields: [id_pessoa], references: [id_pessoa], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Carrinho {
+  id_carrinho     Int               @id @default(autoincrement())
+  id_pessoa       Int               @unique
+  tipo_entrega    tipo_entrega_enum?
+  forma_pagamento String?           @db.VarChar(50)
+  criado_em       DateTime          @default(now()) @db.Timestamp(6)
+  atualizado_em   DateTime          @updatedAt @db.Timestamp(6)
+  pessoa          Pessoa            @relation(fields: [id_pessoa], references: [id_pessoa], onDelete: Cascade, onUpdate: NoAction)
+  itens           ItemCarrinho[]
+
+  @@map("carrinho")
+}
+
+model ItemCarrinho {
+  id_item     Int      @id @default(autoincrement())
+  id_carrinho Int
+  id_produto  Int
+  quantidade  Decimal  @db.Decimal(10, 3)
+  preco       Decimal  @db.Decimal(10, 2)
+  carrinho    Carrinho @relation(fields: [id_carrinho], references: [id_carrinho], onDelete: Cascade, onUpdate: NoAction)
+  produto     Produto  @relation(fields: [id_produto], references: [id_produto], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("itemcarrinho")
 }
 
 enum status_chat_enum {
