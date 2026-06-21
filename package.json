@@ -18,7 +18,7 @@
 		"ejs": "^6.0.1",
 		"express": "^5.2.1",
 		"express-session": "^1.18.2",
-		"pg": "^8.21.0",
+		"pg": "^8.22.0",
 		"prisma": "^7.8.0"
 	},
 	"author": "",
@@ -29,7 +29,7 @@
 	},
 	"homepage": "https://github.com/VerdeAr/Verdear#readme",
 	"devDependencies": {
-		"@biomejs/biome": "2.4.16",
+		"@biomejs/biome": "2.5.0",
 		"@commitlint/cli": "^21.0.2",
 		"@commitlint/config-conventional": "^21.0.2",
 		"@types/bcrypt": "^6.0.0",
