@@ -8,10 +8,16 @@ import {
 
 const ONLINE_THRESHOLD_MS = 2 * 60 * 1000;
 
+// Fuso usado para exibir datas/horas. As datas são gravadas em UTC, mas o
+// servidor pode rodar em UTC (ex.: container Docker), então fixamos o fuso
+// brasileiro para que o horário exibido bata com o horário local do usuário.
+const TIMEZONE = "America/Sao_Paulo";
+
 function formatHora(data: Date): string {
 	return data.toLocaleTimeString("pt-BR", {
 		hour: "2-digit",
 		minute: "2-digit",
+		timeZone: TIMEZONE,
 	});
 }
 
@@ -23,11 +29,15 @@ function formatDataRelativa(data: Date): string {
 	if (diffDias === 0) return formatHora(data);
 	if (diffDias === 1) return "Ontem";
 	if (diffDias < 7) {
-		return data.toLocaleDateString("pt-BR", { weekday: "short" });
+		return data.toLocaleDateString("pt-BR", {
+			weekday: "short",
+			timeZone: TIMEZONE,
+		});
 	}
 	return data.toLocaleDateString("pt-BR", {
 		day: "2-digit",
 		month: "2-digit",
+		timeZone: TIMEZONE,
 	});
 }
 
