@@ -100,7 +100,9 @@
 	width: 20px;
 	text-align: center;
 	color: var(--color-secondary);
-	transition: color 0.25s ease, transform 0.25s ease;
+	transition:
+		color 0.25s ease,
+		transform 0.25s ease;
 }
 
 .config-menu li a:hover i,
