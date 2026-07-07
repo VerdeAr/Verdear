@@ -32,7 +32,7 @@
         <% if (mensagens && mensagens.length > 0) { %>
             <% let ultimaData = ''; %>
             <% mensagens.forEach(msg => { %>
-                <% const dataMsg = new Date(msg.data_envio).toLocaleDateString('pt-BR'); %>
+                <% const dataMsg = new Date(msg.data_envio).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' }); %>
                 <% if (dataMsg !== ultimaData) { %>
                     <div class="date-separator"><span><%= dataMsg %></span></div>
                     <% ultimaData = dataMsg; %>

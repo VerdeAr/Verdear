@@ -6,6 +6,7 @@ import express, {
 } from "express";
 import session from "express-session";
 import prisma from "./core/database.ts";
+import { mountSwagger } from "./core/swagger.ts";
 import chatRoutes from "./features/chat/chat.routes.ts";
 import { errorHandler } from "./middlewares/errorMiddleware.ts";
 import route from "./routes/route.ts";
@@ -62,6 +63,8 @@ app.use(async (req: Request, res: Response, next: NextFunction) => {
 	}
 	next();
 });
+
+mountSwagger(app);
 
 app.use("/chat", chatRoutes);
 app.use("/", route); //Usa as rotas do MVC (as definidas em mvc/routes/route.js)
