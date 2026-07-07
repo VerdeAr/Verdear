@@ -7,3 +7,4 @@
 !prisma.config.ts
 !start.sh
 !tsconfig.json
+!docs/openapi.yaml
