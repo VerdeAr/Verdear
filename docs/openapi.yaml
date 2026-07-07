@@ -1,0 +1,430 @@
+openapi: 3.0.3
+info:
+  title: Verdear API
+  description: |
+    API do sistema Verdear — marketplace de produtos rurais.
+    Autenticação baseada em sessão (cookie `connect.sid`). Faça `POST /login` primeiro.
+  version: 1.0.0
+  contact:
+    name: Verdear
+    url: https://github.com/VerdeAr/Verdear
+servers:
+  - url: http://localhost:3000
+    description: Ambiente local
+tags:
+  - name: Auth
+    description: Autenticação e cadastro
+  - name: Perfil
+    description: Gestão do cadastro pessoal
+  - name: Home
+    description: Navegação e busca de produtos
+  - name: Produtos (Vendedor)
+    description: CRUD de produtos do vendedor
+  - name: Carrinho
+    description: Carrinho de compras persistido
+  - name: Venda
+    description: Checkout e gestão de vendas
+  - name: Pedidos (Vendedor)
+    description: Pedidos recebidos pelo vendedor
+  - name: Avaliação
+    description: Avaliações de venda
+components:
+  securitySchemes:
+    sessionAuth:
+      type: apiKey
+      in: cookie
+      name: connect.sid
+  schemas:
+    Erro:
+      type: object
+      properties:
+        error:
+          type: string
+    LoginRequest:
+      type: object
+      required: [email, senha]
+      properties:
+        email: { type: string, format: email }
+        senha: { type: string, format: password }
+    CadastroRequest:
+      type: object
+      required: [nome_pessoa, cpf, email, senha]
+      properties:
+        nome_pessoa: { type: string }
+        cpf: { type: string }
+        email: { type: string, format: email }
+        senha: { type: string, format: password }
+        telefone: { type: string }
+        endereco: { type: string }
+        id_bairro: { type: integer }
+        tipo_usuario: { type: string, enum: [CLIENTE, VENDEDOR] }
+    Produto:
+      type: object
+      properties:
+        id_produto: { type: integer }
+        id_vendedor: { type: integer }
+        id_categoria: { type: integer }
+        id_unidade_medida: { type: integer }
+        nome_produto: { type: string }
+        preco: { type: number, format: float }
+        estoque: { type: number }
+        ativo: { type: boolean }
+        url_imagem: { type: string }
+        descricao: { type: string }
+    ProdutoInput:
+      type: object
+      required: [nome_produto, preco, id_categoria, id_unidade_medida]
+      properties:
+        nome_produto: { type: string }
+        preco: { type: number }
+        id_categoria: { type: integer }
+        id_unidade_medida: { type: integer }
+        estoque: { type: number }
+        url_imagem: { type: string }
+        descricao: { type: string }
+        ativo: { type: boolean }
+    ItemCarrinhoInput:
+      type: object
+      required: [id_produto, quantidade]
+      properties:
+        id_produto: { type: integer }
+        quantidade: { type: number }
+    QuantidadeInput:
+      type: object
+      required: [quantidade]
+      properties:
+        quantidade: { type: number }
+    EntregaInput:
+      type: object
+      required: [tipo_entrega]
+      properties:
+        tipo_entrega: { type: string, enum: [ENTREGA, RETIRADA] }
+    PagamentoInput:
+      type: object
+      required: [forma_pagamento]
+      properties:
+        forma_pagamento: { type: string }
+    AvaliacaoInput:
+      type: object
+      required: [id_venda, nota]
+      properties:
+        id_venda: { type: integer }
+        nota: { type: integer, minimum: 1, maximum: 5 }
+        comentario: { type: string }
+    VendaUpdate:
+      type: object
+      properties:
+        status: { type: string, enum: [ABERTA, FINALIZADA, CANCELADA] }
+security:
+  - sessionAuth: []
+paths:
+  /:
+    get:
+      tags: [Auth]
+      summary: Tela de login
+      security: []
+      responses:
+        "200": { description: HTML da tela de login }
+        "302": { description: Redireciona para /home se autenticado }
+  /login:
+    post:
+      tags: [Auth]
+      summary: Autentica usuário
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema: { $ref: "#/components/schemas/LoginRequest" }
+      responses:
+        "302": { description: Redireciona conforme sucesso/falha }
+  /cadastrar:
+    get:
+      tags: [Auth]
+      summary: Tela de cadastro
+      security: []
+      responses:
+        "200": { description: HTML de cadastro }
+    post:
+      tags: [Auth]
+      summary: Cria nova pessoa
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema: { $ref: "#/components/schemas/CadastroRequest" }
+      responses:
+        "302": { description: Redireciona ao login/home }
+        "400":
+          description: Erro de validação
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Erro" }
+  /logout:
+    get:
+      tags: [Auth]
+      summary: Encerra sessão
+      responses:
+        "302": { description: Redireciona para / }
+  /home:
+    get:
+      tags: [Home]
+      summary: Home com produtos
+      responses:
+        "200": { description: HTML da home }
+        "401": { description: Não autenticado }
+  /itens_categoria/{id}:
+    get:
+      tags: [Home]
+      summary: Lista produtos por categoria
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200": { description: HTML com produtos filtrados }
+  /produtos/busca:
+    get:
+      tags: [Home]
+      summary: Busca produtos por termo
+      parameters:
+        - in: query
+          name: q
+          schema: { type: string }
+      responses:
+        "200": { description: HTML com resultados }
+  /gestao-cadastro:
+    get:
+      tags: [Perfil]
+      summary: Tela de gestão do cadastro
+      responses:
+        "200": { description: HTML }
+  /pessoa/cadastro:
+    put:
+      tags: [Perfil]
+      summary: Atualiza dados cadastrais
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nome_pessoa: { type: string }
+                telefone: { type: string }
+                endereco: { type: string }
+                id_bairro: { type: integer }
+      responses:
+        "200": { description: Atualizado }
+        "400": { description: Erro }
+  /pessoa/senha:
+    put:
+      tags: [Perfil]
+      summary: Altera senha
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [senha_atual, senha_nova]
+              properties:
+                senha_atual: { type: string }
+                senha_nova: { type: string }
+      responses:
+        "200": { description: Senha alterada }
+        "400": { description: Erro }
+  /pessoa/frete:
+    put:
+      tags: [Perfil]
+      summary: Atualiza frete fixo do vendedor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [frete_fixo]
+              properties:
+                frete_fixo: { type: number }
+      responses:
+        "200": { description: Frete atualizado }
+  /vendedor/produtos:
+    get:
+      tags: [Produtos (Vendedor)]
+      summary: Lista produtos do vendedor logado
+      responses:
+        "200":
+          description: Lista de produtos
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Produto" }
+    post:
+      tags: [Produtos (Vendedor)]
+      summary: Cadastra produto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ProdutoInput" }
+      responses:
+        "201":
+          description: Criado
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Produto" }
+  /vendedor/produtos/{id}:
+    put:
+      tags: [Produtos (Vendedor)]
+      summary: Edita produto
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ProdutoInput" }
+      responses:
+        "200": { description: Atualizado }
+  /carrinho:
+    get:
+      tags: [Carrinho]
+      summary: Exibe carrinho
+      responses:
+        "200": { description: HTML do carrinho }
+  /carrinho/add:
+    post:
+      tags: [Carrinho]
+      summary: Adiciona item ao carrinho
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ItemCarrinhoInput" }
+      responses:
+        "200": { description: Item adicionado }
+  /carrinho/update/{id}:
+    put:
+      tags: [Carrinho]
+      summary: Atualiza quantidade de item
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer, description: "id_item" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/QuantidadeInput" }
+      responses:
+        "200": { description: Atualizado }
+  /carrinho/remove/{id}:
+    delete:
+      tags: [Carrinho]
+      summary: Remove item do carrinho
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer, description: "id_item" }
+      responses:
+        "200": { description: Removido }
+  /carrinho/entrega:
+    post:
+      tags: [Carrinho]
+      summary: Define tipo de entrega
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/EntregaInput" }
+      responses:
+        "200": { description: OK }
+  /carrinho/pagamento:
+    post:
+      tags: [Carrinho]
+      summary: Define forma de pagamento
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PagamentoInput" }
+      responses:
+        "200": { description: OK }
+  /finalizar-venda:
+    get:
+      tags: [Venda]
+      summary: Tela de checkout
+      responses:
+        "200": { description: HTML }
+    post:
+      tags: [Venda]
+      summary: Confirma venda a partir do carrinho
+      responses:
+        "302": { description: Redireciona pós-venda }
+        "400": { description: Carrinho inválido }
+  /venda/{id}:
+    put:
+      tags: [Venda]
+      summary: Atualiza venda
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/VendaUpdate" }
+      responses:
+        "200": { description: Atualizada }
+    delete:
+      tags: [Venda]
+      summary: Remove venda
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200": { description: Removida }
+  /vendedor/pedidos:
+    get:
+      tags: [Pedidos (Vendedor)]
+      summary: Lista pedidos recebidos
+      responses:
+        "200": { description: HTML/JSON de pedidos }
+  /vendedor/pedidos/pendentes/count:
+    get:
+      tags: [Pedidos (Vendedor)]
+      summary: Contagem de pedidos pendentes
+      responses:
+        "200":
+          description: Contagem
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count: { type: integer }
+  /avaliacao:
+    post:
+      tags: [Avaliação]
+      summary: Cria avaliação de venda
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AvaliacaoInput" }
+      responses:
+        "201": { description: Criada }
+        "400": { description: Erro }
