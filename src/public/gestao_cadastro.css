@@ -77,7 +77,11 @@
 	text-decoration: none;
 	color: var(--color-text-dark);
 	border-radius: 8px;
-	transition: background-color 0.3s;
+	transition:
+		background-color 0.25s ease,
+		color 0.25s ease,
+		transform 0.25s ease,
+		box-shadow 0.25s ease;
 	cursor: pointer;
 	/* Adicionado para indicar o clique */
 }
@@ -85,8 +89,10 @@
 /* Classe .active agora é manipulada pelo JS */
 .config-menu li a:hover,
 .config-menu li a.active {
-	background-color: var(--color-secondary);
-	color: var(--color-primary);
+	background-color: var(--color-primary);
+	color: var(--color-bg-light);
+	transform: translateX(2px);
+	box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
 
 .config-menu i {
@@ -94,10 +100,15 @@
 	width: 20px;
 	text-align: center;
 	color: var(--color-secondary);
+	transition:
+		color 0.25s ease,
+		transform 0.25s ease;
 }
 
-.config-menu li a:hover i {
-	color: var(--color-primary);
+.config-menu li a:hover i,
+.config-menu li a.active i {
+	color: var(--color-bg-light);
+	transform: scale(1.08);
 }
 
 /* Ícone de seta na direita */
@@ -166,8 +177,10 @@
 }
 
 .update-form input,
+.update-form select,
 .password-form input,
-.form-cadastro-produto input {
+.form-cadastro-produto input,
+.form-cadastro-produto select {
 	width: 100%;
 	max-width: 400px;
 	/* Limita a largura dos campos */
@@ -175,6 +188,46 @@
 	border: 1px solid #ccc;
 	border-radius: 5px;
 	box-sizing: border-box;
+	transition:
+		border-color 0.25s ease,
+		box-shadow 0.25s ease,
+		transform 0.25s ease,
+		background-color 0.25s ease;
+}
+
+.update-form select,
+.form-cadastro-produto select {
+	background-color: var(--color-bg-light);
+	cursor: pointer;
+}
+
+.update-form input:hover,
+.update-form select:hover,
+.form-cadastro-produto input:hover,
+.form-cadastro-produto select:hover {
+	border-color: var(--color-secondary);
+	box-shadow: 0 0 0 3px rgba(77, 122, 55, 0.12);
+	background-color: #f8fbf5;
+	transform: translateY(-1px);
+}
+
+.update-form input:focus,
+.update-form select:focus,
+.form-cadastro-produto input:focus,
+.form-cadastro-produto select:focus {
+	border-color: var(--color-secondary);
+	box-shadow: 0 0 0 3px rgba(77, 122, 55, 0.18);
+}
+
+.update-form select option,
+.form-cadastro-produto select option {
+	color: var(--color-text-dark);
+}
+
+.update-form select option:checked,
+.form-cadastro-produto select option:checked {
+	color: var(--color-primary);
+	font-weight: 700;
 }
 
 .update-form button,
@@ -193,11 +246,24 @@
 	font-weight: bold;
 	cursor: pointer;
 	text-transform: uppercase;
-	transition: opacity 0.3s;
+	transition:
+		background-color 0.25s ease,
+		opacity 0.25s ease,
+		transform 0.25s ease,
+		box-shadow 0.25s ease;
 }
 
 .btn-cadastrar:hover {
-	opacity: 0.9;
+	background-color: var(--color-primary);
+	box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+	transform: translateY(-1px);
+}
+
+.url-field {
+	max-width: 320px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 /* --- NOVOS ESTILOS PARA MENSAGEM DE SUCESSO (TOAST) --- */
