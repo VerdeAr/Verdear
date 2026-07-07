@@ -15,6 +15,7 @@ COPY --from=build /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/src ./src
 COPY --from=build /usr/src/app/prisma ./prisma
 COPY --from=build /usr/src/app/prisma.config.ts ./prisma.config.ts
+COPY --from=build /usr/src/app/docs ./docs
 COPY start.sh .
 
 RUN chmod +x start.sh
