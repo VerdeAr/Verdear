@@ -6,6 +6,7 @@ import controllerPessoa from "../controllers/controllerPessoa.ts";
 import controllerProduto from "../controllers/controllerProduto.ts";
 import controllerVenda from "../controllers/controllerVenda.ts";
 import carrinhoRoutes from "../features/carrinho/carrinho.routes.ts";
+import chatRoutes from "../features/chat/chat.routes.ts";
 import isAuthenticated from "../middlewares/authMiddleware.ts";
 import { errorHandler } from "../middlewares/errorMiddleware.ts";
 
@@ -42,6 +43,7 @@ route.get("/logout", (req: Request, res: Response) => {
 		}
 
 		res.clearCookie("connect.sid");
+		res.clearCookie("auth_token");
 		res.redirect("/");
 	});
 });
@@ -92,6 +94,7 @@ route.get(
 );
 
 route.use("/", carrinhoRoutes);
+route.use("/chat", chatRoutes);
 
 route.use(errorHandler);
 
