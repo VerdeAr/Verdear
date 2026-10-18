@@ -1,3 +1,4 @@
+import http from "node:http";
 import { join } from "node:path";
 import express, {
 	type NextFunction,
@@ -10,6 +11,7 @@ import { mountSwagger } from "./core/swagger.ts";
 import chatRoutes from "./features/chat/chat.routes.ts";
 import { errorHandler } from "./middlewares/errorMiddleware.ts";
 import route from "./routes/route.ts";
+import { initSocketServer } from "./websocket/socket.server.ts";
 
 //Instanciar o aplicativo express
 const app = express();
@@ -82,6 +84,9 @@ app.use(errorHandler);
 	}
 })();
 
-app.listen(port, () => {
+const server = http.createServer(app);
+initSocketServer(server);
+
+server.listen(port, () => {
 	console.log(`Servidor em execução no endereço http://localhost:${port}`);
 });

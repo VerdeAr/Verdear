@@ -7,6 +7,7 @@ import {
 	ErroNotFound,
 	ErroValidacao,
 } from "../core/errors/erros";
+import { signUserToken } from "../websocket/socket.server.ts";
 
 const BCRYPT_ROUNDS = 10;
 
@@ -45,6 +46,19 @@ export default {
 		req.session.userName = pessoa.nome_pessoa || "";
 		req.session.userEmail = pessoa.email;
 		req.session.userRole = pessoa.tipo_usuario || "";
+
+		const token = signUserToken({
+			userId: pessoa.id_pessoa,
+			userName: pessoa.nome_pessoa || "",
+			userEmail: pessoa.email,
+			userRole: pessoa.tipo_usuario || "",
+		});
+
+		res.cookie("auth_token", token, {
+			httpOnly: true,
+			maxAge: 7 * 24 * 60 * 60 * 1000,
+			sameSite: "lax",
+		});
 
 		return res.redirect("/home");
 	},
